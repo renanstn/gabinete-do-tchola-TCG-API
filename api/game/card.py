@@ -23,8 +23,8 @@ class Card:
         image: Optional[str] = None,
     ):
         self.id = uuid.uuid4()
-        self.hp = 5
-        self.atk = 2
+        self.hp = hp
+        self.atk = atk
         self.name = name
         self.card_type = card_type
         self.description = description

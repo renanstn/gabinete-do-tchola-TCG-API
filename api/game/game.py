@@ -2,6 +2,13 @@ import uuid
 from enum import Enum
 from typing import List, Optional
 
+from api.game.player import Player
+
+
+class GameStatus(Enum):
+    WAITING_PLAYER_A = "waiting player a"
+    WAITING_PLAYER_B = "waiting player b"
+
 
 class Game:
     """
@@ -17,11 +24,30 @@ class Game:
         self.winner = None
         self.turn = True
 
+    @property
+    def player_a(self):
+        return self.players[0]
+
+    @property
+    def player_b(self):
+        return self.players[1]
+
+    def setup_game(self):
+        """
+        - Cada player saca 5 cartas iniciais.
+        """
+        for _ in range(5):
+            self.player_a.draw_card()
+            self.player_b.draw_card()
+
     def switch_turn(self):
         """
         Troca o turno do jogador A para o jogador B.
         """
         self.turn = not self.turn
+
+    def end_play(self):
+        pass
 
 
 def setup_game():
@@ -61,12 +87,5 @@ def draw_card(player_id: str):
 def play_card(player_id: str, card: str):
     """
     Registra uma carta baixada na mesa por um jogador.
-    """
-    pass
-
-
-def set_turn(player_id: str):
-    """
-    Define de quem é a vez de jogar
     """
     pass
