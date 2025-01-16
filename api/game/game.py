@@ -67,8 +67,10 @@ class Game:
         """
         for card in active_player.table:
             if opponent.has_cards_on_table():
-                # TODO
-                pass
+                for enemy_card in opponent.table:
+                    enemy_card.take_damage(card.atk)
+                    if enemy_card.is_dead():
+                        opponent.move_card_to_cemetery(enemy_card)
             else:
                 print(opponent.hp)
                 opponent.subtract_life(card.atk)

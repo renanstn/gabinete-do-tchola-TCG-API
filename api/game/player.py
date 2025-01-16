@@ -1,5 +1,5 @@
 import uuid
-from typing import List, Optional
+from typing import List
 
 from api.game.card import Card
 
@@ -16,6 +16,7 @@ class Player:
         self.deck = deck
         self.cards_in_hand = []
         self.table: List[Card] = []
+        self.cemetery = []
 
     def draw_card(self):
         if len(self.deck):
@@ -53,5 +54,12 @@ class Player:
             card for card in self.cards_in_hand if card.id != card_id
         ]
 
+    def remove_card_from_table(self, card_id: str):
+        self.table = [card for card in self.table if card.id != card_id]
+
     def subtract_life(self, ammount: int):
         self.hp -= ammount
+
+    def move_card_to_cemetery(self, card: Card):
+        self.remove_card_from_table(card.id)
+        self.cemetery.append(card)

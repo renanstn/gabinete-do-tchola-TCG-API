@@ -106,3 +106,7 @@ def test_basic_attack_on_table_with_single_card(deck):
     assert player_b.hp == 10
     # A carta na mesa do player B deve ter morrido
     assert len(player_b.table) == 0
+    # A carta do player B deve ter ido parar no cemiterio
+    assert len(player_b.cemetery) == 1
+    # A carta do player A deve continua na mesa
+    assert len(player_a.table) == 1
