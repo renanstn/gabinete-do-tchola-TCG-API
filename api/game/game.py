@@ -51,16 +51,23 @@ class Game:
         - Verifica se o outro jogador ainda está vivo
         - Passa o turno para o próximo jogador
         """
-        pass
+        active_player, opponent = self.player_a, self.player_b if self.turn else self.player_b, self.player_a
+        self.compute_battle(active_player, opponent)
+        self.switch_turn()
 
-    def compute_battle(self):
+    def compute_battle(self, active_player: Player, opponent: Player):
         """
         Executa os passos da batalha:
         - Realiza os ataques das cartas
         - Mata as cartas cuja vida < 0
         - Ataca o herói caso não haja mais cartas para defender
         """
-        pass
+        for card in player.table:
+            if opponent.has_cards_on_table():
+                # TODO
+                pass
+            else:
+                opponent.hp -= card.atk
 
     def end_game(self):
         """

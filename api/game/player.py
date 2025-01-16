@@ -30,7 +30,12 @@ class Player:
         Registra uma carta jogada na mesa pelo jogador.
         - Insere o card na table list.
         """
-        pass
+        selected_card = filter(lambda i: i.id == card_id, self.cards_in_hand)
+        self.cards_in_hand.remove(selected_card)
+        self.table.append(selected_card)
 
     def is_alive(self) -> bool:
         return self.hp > 0
+
+    def has_cards_on_table(self):
+        return len(self.table) > 0
