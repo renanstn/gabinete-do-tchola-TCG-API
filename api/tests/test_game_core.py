@@ -3,19 +3,12 @@ from api.game.game import Game
 from api.game.player import Player
 
 
-def test_new_game():
+def test_new_game(player_with_default_deck):
     """
-    Dado 2 players e um deck default, deve ser possível iniciar um game.
+    Dado 2 players e um deck default para cada, deve ser possível iniciar um game.
     """
-    deck = [
-        Card(5, 5, "card A", CardType.CHARACTER),
-        Card(5, 5, "card B", CardType.CHARACTER),
-        Card(5, 5, "card C", CardType.CHARACTER),
-        Card(5, 5, "card D", CardType.CHARACTER),
-        Card(5, 5, "card E", CardType.CHARACTER),
-    ]
-    player_a = Player("Foo", deck.copy())
-    player_b = Player("Bar", deck.copy())
+    player_a = player_with_default_deck
+    player_b = player_with_default_deck
     game = Game(player_a, player_b)
 
     game.setup_game()
@@ -23,3 +16,13 @@ def test_new_game():
     assert game.turn == True
     assert len(player_a.cards_in_hand) == 5
     assert len(player_b.cards_in_hand) == 5
+
+def test_basic_attack_on_hero():
+    """
+    Cenário:
+    - O player A possui cartas baixadas
+    - O player B não possui nenhuma carta baixada
+    - O player A encerra seu turno
+    - Cada carta baixada do player A deve atacar diretamente o herói do player B
+    """
+    pass

@@ -31,3 +31,6 @@ class Player:
         - Insere o card na table list.
         """
         pass
+
+    def is_alive(self) -> bool:
+        return self.hp > 0
