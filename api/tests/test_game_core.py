@@ -1,4 +1,3 @@
-from api.game.card import Card, CardType
 from api.game.game import Game
 from api.game.player import Player
 
@@ -77,3 +76,33 @@ def test_basic_attack_on_hero_with_multiple_cards(deck):
     # Verifica a mesa e a mão do player A
     assert len(player_a.table) == 3
     assert len(player_a.cards_in_hand) == 2
+
+
+def test_basic_attack_on_table_with_single_card(deck):
+    """
+    Cenário:
+    - O player A possui uma carta baixada
+    - O player B possui uma carta baixada
+    - O player A encerra seu turno
+    - A carta baixada do player A deve atacar a carta na mesa do player B
+    """
+    player_a = Player("Foo", deck.copy())
+    player_b = Player("Bar", deck.copy())
+    game = Game(player_a, player_b)
+    game.setup_game()
+
+    # Player A baixa uma carta na mesa
+    player_a.play_card("1")
+    assert len(player_a.table) == 1
+    # Player B baixa uma carta na mesa
+    player_b.play_card("1")
+    assert len(player_b.table) == 1
+    # Player A finaliza sua jogada
+    game.end_play()
+
+    # Verifica se o turno passou para o próximo jogador
+    assert game.turn is False
+    # O hero do player B não pode ter apanhado
+    assert player_b.hp == 10
+    # A carta na mesa do player B deve ter morrido
+    assert len(player_b.table) == 0

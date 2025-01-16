@@ -1,14 +1,8 @@
 import random
 import uuid
-from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from api.game.player import Player
-
-
-class GameStatus(Enum):
-    WAITING_PLAYER_A = "waiting player a"
-    WAITING_PLAYER_B = "waiting player b"
 
 
 class Game:
