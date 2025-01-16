@@ -23,13 +23,13 @@ def test_new_game(deck):
     assert len(player_b.deck) == 0
 
 
-def test_basic_attack_on_hero(deck):
+def test_basic_attack_on_hero_with_single_card(deck):
     """
     Cenário:
-    - O player A possui cartas baixadas
+    - O player A possui uma carta baixada
     - O player B não possui nenhuma carta baixada
     - O player A encerra seu turno
-    - Cada carta baixada do player A deve atacar diretamente o herói do player B
+    - A carta baixada do player A deve atacar diretamente o herói do player B
     """
     player_a = Player("Foo", deck.copy())
     player_b = Player("Bar", deck.copy())
@@ -48,3 +48,31 @@ def test_basic_attack_on_hero(deck):
     # Verifica a mesa e a mão do player A
     assert len(player_a.table) == 1
     assert len(player_a.cards_in_hand) == 4
+
+def test_basic_attack_on_hero_with_multiple_cards(deck):
+    """
+    Cenário:
+    - O player A possui várias cartas baixadas
+    - O player B não possui nenhuma carta baixada
+    - O player A encerra seu turno
+    - Cada carta baixada do player A deve atacar diretamente o herói do player B
+    """
+    player_a = Player("Foo", deck.copy())
+    player_b = Player("Bar", deck.copy())
+    # Aumentamos a vida do player B para este teste
+    player_b.hp = 50
+    game = Game(player_a, player_b)
+    game.setup_game()
+
+    player_a.play_card("1")
+    player_a.play_card("2")
+    player_a.play_card("3")
+    game.end_play()
+
+    # Verifica se o turno passou para o próximo jogador
+    assert game.turn is False
+    # Verifica se o player B apanhou
+    assert player_b.hp == 35
+    # Verifica a mesa e a mão do player A
+    assert len(player_a.table) == 3
+    assert len(player_a.cards_in_hand) == 2
