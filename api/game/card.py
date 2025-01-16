@@ -23,7 +23,8 @@ class Card:
         description: str = None,
         image: Optional[str] = None,
     ):
-        if not id:
+        self.id = id
+        if not self.id:
             self.id = str(uuid.uuid4())
         self.hp = hp
         self.atk = atk

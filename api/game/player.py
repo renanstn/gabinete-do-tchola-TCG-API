@@ -20,7 +20,7 @@ class Player:
     def draw_card(self):
         if len(self.deck):
             drawn_card = self.deck.pop()
-            print(f"Drawn card: {drawn_card}")
+            print(f"Player {self.name} drawn card: {drawn_card.id}")
             self.cards_in_hand.append(drawn_card)
         else:
             print("No more cards to draw")
@@ -30,8 +30,8 @@ class Player:
         Registra uma carta jogada na mesa pelo jogador.
         - Insere o card na table list.
         """
-        selected_card = filter(lambda i: i.id == card_id, self.cards_in_hand)
-        self.cards_in_hand.remove(selected_card)
+        selected_card = self.get_card_by_id(card_id)
+        self.remove_card_from_hand(selected_card.id)
         self.table.append(selected_card)
 
     def is_alive(self) -> bool:
@@ -39,3 +39,19 @@ class Player:
 
     def has_cards_on_table(self):
         return len(self.table) > 0
+
+    def get_card_by_id(self, card_id: str) -> Card:
+        for card in self.cards_in_hand:
+            if card.id == card_id:
+                return card
+        raise Exception(
+            f"Player {self.name} don't have any card with ID {card_id}"
+        )
+
+    def remove_card_from_hand(self, card_id: str):
+        self.cards_in_hand = [
+            card for card in self.cards_in_hand if card.id != card_id
+        ]
+
+    def subtract_life(self, ammount: int):
+        self.hp -= ammount

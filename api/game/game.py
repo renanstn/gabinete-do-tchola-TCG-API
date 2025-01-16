@@ -1,3 +1,4 @@
+import random
 import uuid
 from enum import Enum
 from typing import List, Optional
@@ -32,11 +33,15 @@ class Game:
 
     def setup_game(self):
         """
+        - Embaralha os decks dos players
         - Cada player saca 5 cartas iniciais.
         """
+        random.shuffle(self.player_a.deck)
+        random.shuffle(self.player_b.deck)
         for _ in range(5):
             self.player_a.draw_card()
             self.player_b.draw_card()
+        print("Game ready")
 
     def switch_turn(self):
         """
@@ -51,11 +56,11 @@ class Game:
         - Verifica se o outro jogador ainda está vivo
         - Passa o turno para o próximo jogador
         """
-        active_player, opponent = (
-            self.player_a,
-            self.player_b if self.turn else self.player_b,
-            self.player_a,
-        )
+        if self.turn:
+            active_player, opponent = self.player_a, self.player_b
+        else:
+            active_player, opponent = self.player_b, self.player_a
+        print(f"Player {active_player.name} ends its turn")
         self.compute_battle(active_player, opponent)
         self.switch_turn()
 
@@ -66,12 +71,13 @@ class Game:
         - Mata as cartas cuja vida < 0
         - Ataca o herói caso não haja mais cartas para defender
         """
-        for card in player.table:
+        for card in active_player.table:
             if opponent.has_cards_on_table():
                 # TODO
                 pass
             else:
-                opponent.hp -= card.atk
+                print(opponent.hp)
+                opponent.subtract_life(card.atk)
 
     def end_game(self):
         """
