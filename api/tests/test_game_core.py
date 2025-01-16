@@ -49,6 +49,7 @@ def test_basic_attack_on_hero_with_single_card(deck):
     assert len(player_a.table) == 1
     assert len(player_a.cards_in_hand) == 4
 
+
 def test_basic_attack_on_hero_with_multiple_cards(deck):
     """
     Cenário:
