@@ -17,6 +17,7 @@ def test_new_game(player_with_default_deck):
     assert len(player_a.cards_in_hand) == 5
     assert len(player_b.cards_in_hand) == 5
 
+
 def test_basic_attack_on_hero(player_with_default_deck):
     """
     Cenário:

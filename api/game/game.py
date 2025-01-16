@@ -51,7 +51,11 @@ class Game:
         - Verifica se o outro jogador ainda está vivo
         - Passa o turno para o próximo jogador
         """
-        active_player, opponent = self.player_a, self.player_b if self.turn else self.player_b, self.player_a
+        active_player, opponent = (
+            self.player_a,
+            self.player_b if self.turn else self.player_b,
+            self.player_a,
+        )
         self.compute_battle(active_player, opponent)
         self.switch_turn()
 
