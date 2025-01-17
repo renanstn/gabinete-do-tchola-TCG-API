@@ -224,3 +224,41 @@ def test_attack_on_table_and_hero_with_multiple_cards(deck):
     assert len(player_b.cemetery) == 1
     # As cartas do player A continuam na mesa
     assert len(player_a.table) == 3
+
+def test_game_with_multiples_rounds(deck):
+    """
+    Testa um jogo com vários rounds.
+    """
+    # Game setup
+    player_a = Player("Foo", deck.copy())
+    player_b = Player("Bar", deck.copy())
+    game = Game(player_a, player_b)
+    game.setup_game()
+    assert len(player_a.cards_in_hand) == 5
+    assert len(player_b.cards_in_hand) == 5
+
+    # Player A move
+    player_a.play_card("1")
+    game.end_play()
+    assert len(player_a.cards_in_hand) == 4
+    assert len(player_a.table) == 1
+    assert player_b.hp == 5
+    assert not game.turn
+
+    # Player B move
+    player_b.play_card("1")
+    game.end_play()
+    assert len(player_a.cards_in_hand) == 4
+    assert len(player_b.table) == 1
+    assert len(player_a.table) == 0
+    assert len(player_a.cemetery) == 1
+    assert player_a.hp == 10
+    assert game.turn
+
+    # Player A move (2 cards, just for test)
+    player_a.play_card("2")
+    player_a.play_card("3")
+    game.end_play()
+    assert len(player_a.cards_in_hand) == 2
+    assert len(player_a.table) == 2
+    assert player_b.hp == 0

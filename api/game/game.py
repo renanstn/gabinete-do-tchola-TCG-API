@@ -18,11 +18,11 @@ class Game:
         self.turn = True
 
     @property
-    def player_a(self):
+    def player_a(self) -> Player:
         return self.players[0]
 
     @property
-    def player_b(self):
+    def player_b(self) -> Player:
         return self.players[1]
 
     def setup_game(self):
@@ -56,6 +56,8 @@ class Game:
             active_player, opponent = self.player_b, self.player_a
         print(f"Player {active_player.name} ends its turn")
         self.compute_battle(active_player, opponent)
+        if opponent.is_alive():
+            self.end_game()
         self.switch_turn()
 
     def compute_battle(self, active_player: Player, opponent: Player):
@@ -67,12 +69,14 @@ class Game:
         """
         for card in active_player.table:
             if opponent.has_cards_on_table():
+                print(f"Player {active_player.name} attack a card")
                 for enemy_card in opponent.table:
                     enemy_card.take_damage(card.atk)
                     if enemy_card.is_dead():
+                        print("A card was killed!")
                         opponent.move_card_to_cemetery(enemy_card)
             else:
-                print(opponent.hp)
+                print(f"Player {active_player.name} attack a hero directly")
                 opponent.subtract_life(card.atk)
 
     def end_game(self):
