@@ -16,6 +16,7 @@ class Game:
         self.players: List[Player] = [player_a, player_b]
         self.winner = None
         self.turn = True
+        self.active = True
 
     @property
     def player_a(self) -> Player:
@@ -43,6 +44,13 @@ class Game:
         """
         self.turn = not self.turn
 
+    def get_active_player_and_opponent(self) -> List[Player]:
+        if self.turn:
+            active_player, opponent = self.player_a, self.player_b
+        else:
+            active_player, opponent = self.player_b, self.player_a
+        return active_player, opponent
+
     def end_play(self):
         """
         Termina a jogada de um jogador.
@@ -50,20 +58,18 @@ class Game:
         - Verifica se o outro jogador ainda está vivo
         - Passa o turno para o próximo jogador
         """
-        if self.turn:
-            active_player, opponent = self.player_a, self.player_b
-        else:
-            active_player, opponent = self.player_b, self.player_a
+        active_player, opponent = self.get_active_player_and_opponent()
         print(f"Player {active_player.name} ends its turn")
         self.compute_battle(active_player, opponent)
         if opponent.is_alive():
+            self.switch_turn()
+        else:
             self.end_game()
-        self.switch_turn()
 
     def compute_battle(self, active_player: Player, opponent: Player):
         """
         Executa os passos da batalha:
-        - Realiza os ataques das cartas
+        - Realiza os ataques das cartas baixadas na mesa
         - Mata as cartas cuja vida < 0
         - Ataca o herói caso não haja mais cartas para defender
         """
@@ -83,4 +89,5 @@ class Game:
         """
         Finaliza um jogo, registra o vencedor.
         """
-        pass
+        self.winner = self.player_a if self.player_a.hp > 0 else self.player_b
+        self.active = False

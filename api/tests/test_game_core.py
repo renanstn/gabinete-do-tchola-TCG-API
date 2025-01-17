@@ -263,3 +263,5 @@ def test_game_with_multiples_rounds(deck):
     assert len(player_a.cards_in_hand) == 2
     assert len(player_a.table) == 2
     assert player_b.hp == 0
+    assert game.winner == player_a
+    assert game.active is False
