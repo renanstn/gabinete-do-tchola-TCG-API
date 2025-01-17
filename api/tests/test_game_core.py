@@ -289,7 +289,7 @@ def test_game_with_multiples_rounds(deck):
     """
     Testa um jogo com vários rounds.
     """
-    # Game setup
+    # Preparação
     player_a = Player("Foo", deck.copy())
     player_b = Player("Bar", deck.copy())
     game = Game(player_a, player_b)
@@ -297,7 +297,7 @@ def test_game_with_multiples_rounds(deck):
     assert len(player_a.cards_in_hand) == 5
     assert len(player_b.cards_in_hand) == 5
 
-    # Player A move
+    # Jogada do player A
     player_a.play_card("1")
     player_a.table[0].activate()
     game.end_play()
@@ -306,7 +306,7 @@ def test_game_with_multiples_rounds(deck):
     assert player_b.hp == 5
     assert not game.turn
 
-    # Player B move
+    # Jogada do player B
     player_b.play_card("1")
     player_b.table[0].activate()
     game.end_play()
@@ -317,7 +317,7 @@ def test_game_with_multiples_rounds(deck):
     assert player_a.hp == 10
     assert game.turn
 
-    # Player A move (2 cards, just for test)
+    # Jogada do player A (2 cartas seguidas, apenas para testar)
     player_a.play_card("2")
     player_a.play_card("3")
     player_a.table[0].activate()
@@ -328,3 +328,9 @@ def test_game_with_multiples_rounds(deck):
     assert player_b.hp == 0
     assert game.winner == player_a
     assert game.active is False
+
+def test_player_can_not_play_two_cards_on_same_turn():
+    pass
+
+def test_use_item_on_card():
+    pass
