@@ -225,6 +225,7 @@ def test_attack_on_table_and_hero_with_multiple_cards(deck):
     # As cartas do player A continuam na mesa
     assert len(player_a.table) == 3
 
+
 def test_game_with_multiples_rounds(deck):
     """
     Testa um jogo com vários rounds.
