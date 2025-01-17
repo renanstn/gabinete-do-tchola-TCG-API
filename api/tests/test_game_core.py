@@ -152,7 +152,7 @@ def test_attack_on_table_with_single_card_without_kill(deck):
 def test_attack_on_table_with_multiple_cards(deck):
     """
     Cenário:
-    - O player A possui duas cartas baixada
+    - O player A possui duas cartas baixadas
     - O player B possui uma carta baixada, com 15 de vida
     - O player A encerra seu turno
     - As duas cartas do player A devem atacar a carta baixada do player B
@@ -185,3 +185,42 @@ def test_attack_on_table_with_multiple_cards(deck):
     assert player_b.table[0].hp == 5
     # As cartas do player A continuam na mesa
     assert len(player_a.table) == 2
+
+
+def test_attack_on_table_and_hero_with_multiple_cards(deck):
+    """
+    Cenário:
+    - O player A possui três cartas baixadas
+    - O player B possui uma carta baixada, com 8 de vida
+    - O player A encerra seu turno
+    - As duas cartas do player A devem atacar a carta baixada do player B
+    - A carta que sobra, deve atacar o hero do player B
+    - A mesa do player B fica sem cartas
+    """
+    player_a = Player("Foo", deck.copy())
+    player_b = Player("Bar", deck.copy())
+    # Altera manualmente a vida da carta "1" para 8
+    player_b.deck[0].hp = 8
+    game = Game(player_a, player_b)
+    game.setup_game()
+
+    # Player A baixa duas cartas na mesa
+    player_a.play_card("1")
+    player_a.play_card("2")
+    player_a.play_card("3")
+    assert len(player_a.table) == 3
+    # Player B baixa uma carta na mesa
+    player_b.play_card("1")
+    assert len(player_b.table) == 1
+    # Player A finaliza sua jogada
+    game.end_play()
+
+    # Verifica se o turno passou para o próximo jogador
+    assert game.turn is False
+    # O hero do player B deve ter apanhado
+    assert player_b.hp == 5
+    # A carta na mesa do player B deve estar morta
+    assert len(player_b.table) == 0
+    assert len(player_b.cemetery) == 1
+    # As cartas do player A continuam na mesa
+    assert len(player_a.table) == 3
