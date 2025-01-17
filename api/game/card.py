@@ -32,9 +32,13 @@ class Card:
         self.card_type = card_type
         self.description = description
         self.image = image
+        self.can_attack = False
 
     def take_damage(self, damage: int):
         self.hp -= damage
 
     def is_dead(self) -> bool:
         return self.hp <= 0
+
+    def activate(self):
+        self.can_attack = True

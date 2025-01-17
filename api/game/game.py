@@ -56,11 +56,14 @@ class Game:
         Termina a jogada de um jogador.
         - Faz as ações necessárias (cartas atacam)
         - Verifica se o outro jogador ainda está vivo
+        - Ativa as cartas recém baixadas
         - Passa o turno para o próximo jogador
         """
         active_player, opponent = self.get_active_player_and_opponent()
         print(f"Player {active_player.name} ends its turn")
         self.compute_battle(active_player, opponent)
+        for card in active_player.table:
+            card.activate()
         if opponent.is_alive():
             self.switch_turn()
         else:
@@ -74,6 +77,8 @@ class Game:
         - Ataca o herói caso não haja mais cartas para defender
         """
         for card in active_player.table:
+            if not card.can_attack:
+                continue
             if opponent.has_cards_on_table():
                 print(f"Player {active_player.name} attack a card")
                 for enemy_card in opponent.table:
