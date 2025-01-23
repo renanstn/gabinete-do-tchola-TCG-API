@@ -33,6 +33,7 @@ class Card:
         self.description = description
         self.image = image
         self.can_attack = False
+        self.items = []  # List of items IDs
 
     def take_damage(self, damage: int):
         self.hp -= damage
@@ -42,3 +43,6 @@ class Card:
 
     def activate(self):
         self.can_attack = True
+
+    def has_items(self) -> bool:
+        return bool(self.items)
