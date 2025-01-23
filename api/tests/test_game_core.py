@@ -330,7 +330,28 @@ def test_game_with_multiples_rounds(deck):
     assert game.active is False
 
 def test_player_can_not_play_two_cards_on_same_turn():
+    """
+    - Idéia: Usar a existência de cartas com o `can_attack: False` na table
+    para validar se uma carta já foi jogada.
+    """
     pass
 
 def test_use_item_on_card():
+    """
+    - Deve ser possível usar itens para evoluir ou dar buff em cartas de
+    personagens já baixadas na table.
+    """
+    pass
+
+def test_edit_deck_add_card():
+    """
+    - Antes do jogo, deve ser possível editar o deck, e adicionar cartas a ele
+    - Cada deck tem um limite de X cartas
+    """
+    pass
+
+def test_edit_deck_remove_card():
+    """
+    - Antes do jogo, deve ser possível editar o deck, e remover cartas dele
+    """
     pass
