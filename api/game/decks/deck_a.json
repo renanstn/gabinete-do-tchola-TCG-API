@@ -1,0 +1,86 @@
+{
+    "name": "Test Deck",
+    "description": "Just a simple description",
+    "cards": [
+        {
+            "name": "Card A",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card B",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card C",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card D",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card E",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card F",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card G",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card H",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card I",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        },
+        {
+            "name": "Card J",
+            "card_type": "character",
+            "description": "Card description...",
+            "hp": 10,
+            "atk": 3,
+            "image": ""
+        }
+    ]
+}
