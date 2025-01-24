@@ -68,4 +68,4 @@ class Player:
         self.cemetery.append(card)
 
     def can_play_card(self) -> bool:
-        return not any(card for card in self.table if card.can_attack is False)
+        return any(card for card in self.table if card.can_attack is False)
