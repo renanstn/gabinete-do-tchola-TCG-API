@@ -31,6 +31,9 @@ class Player:
         Registra uma carta jogada na mesa pelo jogador.
         - Insere o card na table list.
         """
+        if not self.can_play_card():
+            print("This player already made its play")
+            return
         selected_card = self.get_card_by_id(card_id)
         self.remove_card_from_hand(selected_card.id)
         self.table.append(selected_card)
@@ -63,3 +66,6 @@ class Player:
     def move_card_to_cemetery(self, card: Card):
         self.remove_card_from_table(card.id)
         self.cemetery.append(card)
+
+    def can_play_card(self) -> bool:
+        return not any(card for card in self.table if card.can_attack is False)

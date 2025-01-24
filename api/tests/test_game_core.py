@@ -329,12 +329,19 @@ def test_game_with_multiples_rounds(deck):
     assert game.winner == player_a
     assert game.active is False
 
-def test_player_can_not_play_two_cards_on_same_turn():
+def test_player_can_not_play_two_cards_on_same_turn(deck):
     """
-    - Idéia: Usar a existência de cartas com o `can_attack: False` na table
-    para validar se uma carta já foi jogada.
+    - Um jogador não pode baixar 2 cartas no mesmo turno.
     """
-    pass
+    player_a = Player("Foo", deck.copy())
+    player_b = Player("Bar", deck.copy())
+    game = Game(player_a, player_b)
+    game.setup_game()
+
+    player_a.play_card("1")
+    player_a.play_card("2")
+
+    assert len(player_a.table) == 1
 
 def test_use_item_on_card():
     """
