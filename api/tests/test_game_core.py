@@ -326,6 +326,7 @@ def test_game_with_multiples_rounds(deck):
     assert game.winner == player_a
     assert game.active is False
 
+
 def test_player_can_not_play_two_cards_on_same_turn(deck):
     """
     - Um jogador não pode baixar 2 cartas no mesmo turno.
@@ -340,6 +341,7 @@ def test_player_can_not_play_two_cards_on_same_turn(deck):
 
     assert len(player_a.table) == 1
 
+
 def test_use_item_on_card():
     """
     - Deve ser possível usar itens para evoluir ou dar buff em cartas de
@@ -347,12 +349,14 @@ def test_use_item_on_card():
     """
     pass
 
+
 def test_edit_deck_add_card():
     """
     - Antes do jogo, deve ser possível editar o deck, e adicionar cartas a ele
     - Cada deck tem um limite de X cartas
     """
     pass
+
 
 def test_edit_deck_remove_card():
     """
