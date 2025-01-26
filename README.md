@@ -33,10 +33,10 @@ Este repositório contém a API que centralizará as partidas de um jogo online 
 
 ### Setup para desenvolvimento
 
-- Dentro da pasta `api`, inicie um ambiente virtual
+- Dentro da pasta `card_game`, inicie um ambiente virtual
 
 ```sh
-cd api
+cd card_game
 python -m venv .venv
 source .venv/bin/activate
 ```
@@ -44,6 +44,7 @@ source .venv/bin/activate
 - Instale as dependências
 
 ```sh
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 

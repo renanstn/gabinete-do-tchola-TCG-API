@@ -2,7 +2,7 @@ import random
 import uuid
 from typing import List
 
-from api.domain.player import Player
+from card_game.domain.player import Player
 
 
 class Game:
