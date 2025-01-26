@@ -1,5 +1,5 @@
-from api.game.game import Game
-from api.game.player import Player
+from api.domain.game import Game
+from api.domain.player import Player
 
 
 def test_new_game(deck):

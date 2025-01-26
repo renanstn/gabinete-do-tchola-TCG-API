@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-from api.game.card import Card
+from api.domain.card import Card
 
 
 class Player:

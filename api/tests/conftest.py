@@ -1,8 +1,8 @@
 import pytest
 
-from api.game.card import Card, CardType
-from api.game.game import Game
-from api.game.player import Player
+from api.domain.card import Card, CardType
+from api.domain.game import Game
+from api.domain.player import Player
 
 
 @pytest.fixture
