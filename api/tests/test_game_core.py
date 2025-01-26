@@ -102,11 +102,10 @@ def test_attack_on_hero_with_multiple_cards(deck):
     game.setup_game()
 
     player_a.play_card("1")
-    player_a.play_card("2")
-    player_a.play_card("3")
-    # Manualmente ativa as cartas jogadas
     player_a.table[0].activate()
+    player_a.play_card("2")
     player_a.table[1].activate()
+    player_a.play_card("3")
     player_a.table[2].activate()
     game.end_play()
 
@@ -216,9 +215,8 @@ def test_attack_on_table_with_multiple_cards(deck):
 
     # Player A baixa duas cartas na mesa
     player_a.play_card("1")
-    player_a.play_card("2")
-    # Manualmente ativa a carta jogada
     player_a.table[0].activate()
+    player_a.play_card("2")
     player_a.table[1].activate()
     assert len(player_a.table) == 2
     # Player B baixa uma carta na mesa
@@ -260,11 +258,10 @@ def test_attack_on_table_and_hero_with_multiple_cards(deck):
 
     # Player A baixa duas cartas na mesa
     player_a.play_card("1")
-    player_a.play_card("2")
-    player_a.play_card("3")
-    # Manualmente ativa as cartas jogadas
     player_a.table[0].activate()
+    player_a.play_card("2")
     player_a.table[1].activate()
+    player_a.play_card("3")
     player_a.table[2].activate()
     assert len(player_a.table) == 3
     # Player B baixa uma carta na mesa
@@ -319,8 +316,8 @@ def test_game_with_multiples_rounds(deck):
 
     # Jogada do player A (2 cartas seguidas, apenas para testar)
     player_a.play_card("2")
-    player_a.play_card("3")
     player_a.table[0].activate()
+    player_a.play_card("3")
     player_a.table[1].activate()
     game.end_play()
     assert len(player_a.cards_in_hand) == 2

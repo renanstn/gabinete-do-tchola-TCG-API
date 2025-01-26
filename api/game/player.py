@@ -37,6 +37,7 @@ class Player:
         selected_card = self.get_card_by_id(card_id)
         self.remove_card_from_hand(selected_card.id)
         self.table.append(selected_card)
+        print(f"Player {self.name} play a card")
 
     def is_alive(self) -> bool:
         return self.hp > 0
