@@ -6,7 +6,7 @@ from card_game.domain.card import Card
 
 class Player:
     """
-    Um jogador, possui um deck de cartas e faz ações de baixr cartas na mesa.
+    Um jogador, possui um deck de cartas e faz ações de baixar cartas na mesa.
     """
 
     def __init__(self, name: str, deck: List[Card]):

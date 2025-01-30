@@ -1,6 +1,6 @@
 # gabinete-do-tchola-TCG-API
 
-Um card games sobre memes internos...
+Minha tentativa de fazer um card game online.
 
 ## Descrição
 
