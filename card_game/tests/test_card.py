@@ -1,6 +1,6 @@
 import pytest
 
-from card_game.domain.card import Card, CardType
+from domain.card import Card, CardType
 
 
 def test_card_initialization():

@@ -1,5 +1,5 @@
-from card_game.domain.game import Game
-from card_game.domain.player import Player
+from domain.game import Game
+from domain.player import Player
 
 
 def test_new_game(deck):

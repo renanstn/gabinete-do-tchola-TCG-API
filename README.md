@@ -48,6 +48,12 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+- Suba o servidor de testes com o comando
+
+```sh
+flask run
+```
+
 ### Comandos úteis
 
 Executa o `black` e o `isort` para auto formatação do código:

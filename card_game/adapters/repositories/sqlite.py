@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from card_game.adapters.repositories.base import BaseRepository
-from card_game.adapters.repositories.models.game import Game
+from adapters.repositories.base import BaseRepository
+from adapters.repositories.models.game import Game
 
 
 class SqliteRepository(BaseRepository):

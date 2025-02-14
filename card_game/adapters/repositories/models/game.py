@@ -1,10 +1,9 @@
 from sqlalchemy import Boolean, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from adapters.repositories.models.base import base
 
 
-class Game(Base):
+class Game(base):
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, index=True)

@@ -1,0 +1,19 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from adapters.repositories.models.base import base
+from adapters.repositories.models.game import Game
+from config import PostgresConfig, SQLiteConfig
+
+engine = create_engine(SQLiteConfig.SQLALCHEMY_DATABASE_URI)
+SessionLocal = sessionmaker(bind=engine)
+
+
+def create_tables():
+    print(base.metadata.tables.keys())
+    base.metadata.create_all(engine)
+    print("Tables created!")
+
+
+if __name__ == "__main__":
+    create_tables()

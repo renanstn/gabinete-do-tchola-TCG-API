@@ -1,7 +1,7 @@
 import pytest
 
-from card_game.domain.card import Card, CardType
-from card_game.domain.player import Player
+from domain.card import Card, CardType
+from domain.player import Player
 
 
 @pytest.fixture
