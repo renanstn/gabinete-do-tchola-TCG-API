@@ -1,7 +1,12 @@
+"""
+This script aims to be run once to create the tables in the database.
+"""
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from adapters.repositories.models.base import base
+# Necessary imports to create the tables
 from adapters.repositories.models.game import Game
 from config import PostgresConfig, SQLiteConfig
 

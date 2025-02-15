@@ -7,7 +7,7 @@ class Game(base):
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, index=True)
-    # players = Column()  # FIXME
+    players = Column()  # FIXME
     winner = Column(String)
-    turn = Column(Boolean)
-    active = Column(Boolean)
+    turn = Column(Boolean, default=True)
+    active = Column(Boolean, default=True)
