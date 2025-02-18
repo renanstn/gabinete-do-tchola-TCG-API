@@ -1,6 +1,6 @@
 # gabinete-do-tchola-TCG-API
 
-Minha tentativa de fazer um card game online.
+Minha tentativa de fazer um card game online, e estudar arquitetura hexagonal no processo.
 
 ## Descrição
 
@@ -8,13 +8,15 @@ Projeto aleatório para tentar criar um card games online.
 
 Este repositório contém a API que centralizará as partidas de um jogo online de cartas.
 
+O frontend do jogo provavelmente será feito em um repositório a parte.
+
 ## Regras do jogo
 
 - Cada jogador tem a chance de montar / editar seus decks antes do início do jogo
 - No início da partida cada jogador saca 5 cartas
 - Em sua vez, cada jogador pode baixar 1 carta na mesa
 - Existem cartas de **personagens** e cartas de **items**
-- Uma carta não pode atacar no mesmo turno em que foi baixada
+- Uma carta **não pode atacar** no mesmo turno em que foi **baixada**
 - Após baixar a carta, inicia-se a fase de ataque (automática)
 - Caso haja cartas do oponente na mesa, elas sempre serão o alvo das cartas atacantes
 - Caso não haja cartas do oponente na mesa, as cartas atacantes atacam diretamente o herói do oponente
