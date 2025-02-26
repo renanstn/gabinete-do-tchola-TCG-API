@@ -1,15 +1,17 @@
 from flask import Flask
 
+from adapters.interfaces.http.game_blueprint import game_blueprint
 from adapters.repositories.factory import get_repository
 from adapters.repositories.models.game import Game
 from adapters.repositories.models.player import Player
 
 app = Flask(__name__)
+app.register_blueprint(game_blueprint)
 
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "<p>Hello from app!</p>"
 
 
 @app.route("/test_db")
