@@ -89,3 +89,16 @@ Testando o endpoint que testa o DB
 ```sh
 curl -X GET http://localhost:5000/test_db
 ```
+
+Iniciando um game via endpoint
+
+```sh
+curl -X POST http://localhost:5000/game/start \
+    -H "Content-Type: application/json" \
+    -d '{
+            "players": [1, 2],
+            "winner": null,
+            "turn": true,
+            "active": true
+        }'
+```
