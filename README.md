@@ -52,6 +52,10 @@ pip install -r requirements.txt
 
 - Inicialize o banco de dados com o script `db_init.py`
 
+```sh
+python db_init.py
+```
+
 - Suba o servidor de testes com o comando
 
 ```sh
