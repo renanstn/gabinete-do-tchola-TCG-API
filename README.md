@@ -59,7 +59,7 @@ python db_init.py
 - Suba o servidor de testes com o comando
 
 ```sh
-flask run
+flask run --debug
 ```
 
 ### Comandos úteis
@@ -74,4 +74,18 @@ Executar os testes unitários:
 
 ```sh
 pytest
+```
+
+### Testando endpoints
+
+Testando o endpoint de hello
+
+```sh
+curl -X GET http://localhost:5000/
+```
+
+Testando o endpoint que testa o DB
+
+```sh
+curl -X GET http://localhost:5000/test_db
 ```
