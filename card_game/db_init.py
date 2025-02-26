@@ -6,9 +6,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from adapters.repositories.models.base import base
-# Necessary imports to create the tables
+# Necessary import models to create the tables --------------------------------
 from adapters.repositories.models.game import Game
 from adapters.repositories.models.player import Player
+# End of models imports -------------------------------------------------------
 from config import PostgresConfig, SQLiteConfig
 
 engine = create_engine(SQLiteConfig.SQLALCHEMY_DATABASE_URI)
