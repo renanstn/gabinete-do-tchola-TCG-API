@@ -1,5 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, jsonify, request
+from pydantic import ValidationError
+
 from application.game_service import GameService
+from application.schemas.player_schema import CreatePlayerSchema
 
 game_blueprint = Blueprint("game", __name__, url_prefix="/game")
 
@@ -21,6 +24,14 @@ def check_turn(game_id: int):
 
 @game_blueprint.route("/start", methods=["POST"])
 def start_game():
-    data = request.json
-    print(data)
+    """
+    Given 2 players, start a new game.
+    """
+    try:
+        players = [
+            CreatePlayerSchema(**player) for player in request.json["players"]
+        ]
+    except ValidationError as err:
+        return jsonify({"errors": err.errors()}), 400
+
     return "Game started"
