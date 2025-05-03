@@ -1,5 +1,6 @@
 from flask import Flask
 
+from adapters.interfaces.http.deck_blueprint import deck_blueprint
 from adapters.interfaces.http.game_blueprint import game_blueprint
 from adapters.repositories.factory import get_repository
 from adapters.repositories.models.game import Game
@@ -7,6 +8,7 @@ from adapters.repositories.models.player import Player
 
 app = Flask(__name__)
 app.register_blueprint(game_blueprint)
+app.register_blueprint(deck_blueprint)
 
 
 @app.route("/")
