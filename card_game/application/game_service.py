@@ -1,4 +1,9 @@
+from typing import List
+
 from adapters.repositories.factory import get_repository
+from adapters.repositories.models.game import Game
+from adapters.repositories.models.player import Player
+from application.schemas.player_schema import CreatePlayerSchema
 
 
 class GameService:
@@ -12,9 +17,16 @@ class GameService:
         return True
 
     @classmethod
-    def start_game(cls, players):
-        # TODO Store player A
-        # TODO Store player B
-        # TODO Create a new game
-        # TODO Store the game
-        pass
+    def start_game(cls, players: List[CreatePlayerSchema]) -> None:
+        game_players = [
+            Player(
+                name=player.name,
+                hp=100,
+                cards_in_hand="",
+                table="",
+                cemetery="",
+            )
+            for player in players
+        ]
+        game = Game(winner=None, turn=True, active=True, players=game_players)
+        cls.repository.save_game_state(game)

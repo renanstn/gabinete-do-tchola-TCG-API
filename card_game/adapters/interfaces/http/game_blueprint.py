@@ -34,4 +34,6 @@ def start_game():
     except ValidationError as err:
         return jsonify({"errors": err.errors()}), 400
 
+    GameService.start_game(players)
+
     return "Game started"

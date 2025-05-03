@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from adapters.repositories.base import BaseRepository
 from adapters.repositories.models.game import Game
+from adapters.repositories.models.player import Player
 
 
 class SqliteRepository(BaseRepository):
@@ -19,3 +20,12 @@ class SqliteRepository(BaseRepository):
         else:
             self.session.add(game)
         self.session.commit()
+
+    def list_players(self):
+        return self.session.query(Player).all()
+
+    def list_games(self):
+        return self.session.query(Game).all()
+
+    def get_game(self, game_id: int):
+        return self.session.query(Game).filter(Game.id == game_id).first()
