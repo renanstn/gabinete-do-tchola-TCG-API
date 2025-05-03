@@ -9,7 +9,7 @@ game_blueprint = Blueprint("game", __name__, url_prefix="/game")
 
 @game_blueprint.route("/hello")
 def say_hi():
-    return "Hi from games!"
+    return "Hi from game blueprint!"
 
 
 @game_blueprint.route("/<game_id>/check_turn")
