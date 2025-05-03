@@ -3,6 +3,12 @@ from flask.testing import FlaskClient
 from adapters.repositories.factory import get_repository
 
 
+def test_hello(client: FlaskClient):
+    response = client.get("/game/hello")
+    assert response.status_code == 200
+    assert response.data.decode("utf-8") == "Hi from game blueprint!"
+
+
 def test_start_game(client: FlaskClient):
     player_a = {"name": "Player A", "deck_id": "1"}
     player_b = {"name": "Player B", "deck_id": "2"}
