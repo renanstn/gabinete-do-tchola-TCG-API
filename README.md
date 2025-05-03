@@ -73,10 +73,10 @@ make clean
 Executar os testes unitários:
 
 ```sh
-pytest
+make test
 ```
 
-### Testando endpoints
+### Testando endpoints manualmente
 
 Testando o endpoint de hello
 
@@ -84,7 +84,7 @@ Testando o endpoint de hello
 curl -X GET http://localhost:5000/
 ```
 
-Testando o endpoint que testa o DB
+Testando o endpoint que valida a conexão com o DB
 
 ```sh
 curl -X GET http://localhost:5000/test_db
