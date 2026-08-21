@@ -31,7 +31,7 @@ o domínio e os casos de uso não devem conhecer SQLAlchemy.
 cd card_game
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install --upgrade pip
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 python -m pytest
 flask --app app run --debug
