@@ -1,7 +1,5 @@
 import uuid
 from enum import Enum
-from typing import Optional
-
 
 class CardType(Enum):
     CHARACTER = "character"
@@ -19,9 +17,9 @@ class Card:
         atk: int,
         name: str,
         card_type: CardType,
-        id: str = None,
-        description: str = None,
-        image: Optional[str] = None,
+        id: str | None = None,
+        description: str | None = None,
+        image: str | None = None,
     ):
         self.id = id
         if not self.id:
@@ -33,7 +31,7 @@ class Card:
         self.description = description
         self.image = image
         self.can_attack = False
-        self.items = []  # List of items IDs
+        self.items: list[str] = []  # IDs dos itens aplicados
 
     def take_damage(self, damage: int):
         self.hp -= damage

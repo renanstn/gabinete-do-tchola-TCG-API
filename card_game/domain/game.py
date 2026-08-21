@@ -1,7 +1,5 @@
 import random
 import uuid
-from typing import List
-
 from domain.player import Player
 
 
@@ -13,7 +11,7 @@ class Game:
 
     def __init__(self, player_a: Player, player_b: Player):
         self.id = uuid.uuid4()
-        self.players: List[Player] = [player_a, player_b]
+        self.players: list[Player] = [player_a, player_b]
         self.winner = None
         self.turn = True
         self.active = True
@@ -44,7 +42,7 @@ class Game:
         """
         self.turn = not self.turn
 
-    def get_active_player_and_opponent(self) -> List[Player]:
+    def get_active_player_and_opponent(self) -> list[Player]:
         if self.turn:
             active_player, opponent = self.player_a, self.player_b
         else:

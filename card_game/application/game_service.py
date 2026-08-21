@@ -1,5 +1,3 @@
-from typing import List
-
 from adapters.repositories.factory import get_repository
 from adapters.repositories.models.game import Game
 from adapters.repositories.models.player import Player
@@ -17,7 +15,7 @@ class GameService:
         return True
 
     @classmethod
-    def start_game(cls, players: List[CreatePlayerSchema]) -> None:
+    def start_game(cls, players: list[CreatePlayerSchema]) -> None:
         game_players = [
             Player(
                 name=player.name,

@@ -1,6 +1,4 @@
 import uuid
-from typing import List
-
 from domain.card import Card
 
 
@@ -9,13 +7,13 @@ class Player:
     Um jogador, possui um deck de cartas e faz ações de baixar cartas na mesa.
     """
 
-    def __init__(self, name: str, deck: List[Card]):
+    def __init__(self, name: str, deck: list[Card]):
         self.id = uuid.uuid4()
         self.name = name
         self.hp = 10
         self.deck = deck
         self.cards_in_hand = []
-        self.table: List[Card] = []
+        self.table: list[Card] = []
         self.cemetery = []
 
     def draw_card(self):
