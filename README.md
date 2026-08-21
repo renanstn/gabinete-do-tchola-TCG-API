@@ -41,6 +41,8 @@ O frontend do jogo provavelmente será feito em um repositório a parte.
 cd card_game
 python -m venv .venv
 source .venv/bin/activate
+# ou
+.\.venv\Scripts\Activate.ps1
 ```
 
 - Instale as dependências
