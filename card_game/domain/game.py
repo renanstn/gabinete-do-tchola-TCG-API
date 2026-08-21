@@ -1,5 +1,6 @@
 import random
 import uuid
+
 from domain.player import Player
 
 
@@ -10,11 +11,11 @@ class Game:
     """
 
     def __init__(self, player_a: Player, player_b: Player):
-        self.id = uuid.uuid4()
+        self.id: uuid.UUID = uuid.uuid4()
         self.players: list[Player] = [player_a, player_b]
-        self.winner = None
-        self.turn = True
-        self.active = True
+        self.winner: Player | None = None
+        self.turn: bool = True
+        self.active: bool = True
 
     @property
     def player_a(self) -> Player:
@@ -24,7 +25,7 @@ class Game:
     def player_b(self) -> Player:
         return self.players[1]
 
-    def setup_game(self):
+    def setup_game(self) -> None:
         """
         - Embaralha os decks dos players
         - Cada player saca 5 cartas iniciais.
@@ -34,22 +35,21 @@ class Game:
         for _ in range(5):
             self.player_a.draw_card()
             self.player_b.draw_card()
-        print("Game ready")
 
-    def switch_turn(self):
+    def switch_turn(self) -> None:
         """
         Troca o turno do jogador A para o jogador B.
         """
         self.turn = not self.turn
 
-    def get_active_player_and_opponent(self) -> list[Player]:
+    def get_active_player_and_opponent(self) -> tuple[Player, Player]:
         if self.turn:
             active_player, opponent = self.player_a, self.player_b
         else:
             active_player, opponent = self.player_b, self.player_a
         return active_player, opponent
 
-    def end_play(self):
+    def end_play(self) -> None:
         """
         Termina a jogada de um jogador.
         - Faz as ações necessárias (cartas atacam)
@@ -58,7 +58,6 @@ class Game:
         - Passa o turno para o próximo jogador
         """
         active_player, opponent = self.get_active_player_and_opponent()
-        print(f"Player {active_player.name} ends its turn")
         self.compute_battle(active_player, opponent)
         for card in active_player.table:
             card.activate()
@@ -67,7 +66,7 @@ class Game:
         else:
             self.end_game()
 
-    def compute_battle(self, active_player: Player, opponent: Player):
+    def compute_battle(self, active_player: Player, opponent: Player) -> None:
         """
         Executa os passos da batalha:
         - Realiza os ataques das cartas baixadas na mesa
@@ -78,17 +77,14 @@ class Game:
             if not card.can_attack:
                 continue
             if opponent.has_cards_on_table():
-                print(f"Player {active_player.name} attack a card")
                 for enemy_card in opponent.table:
                     enemy_card.take_damage(card.atk)
                     if enemy_card.is_dead():
-                        print("A card was killed!")
                         opponent.move_card_to_cemetery(enemy_card)
             else:
-                print(f"Player {active_player.name} attack a hero directly")
                 opponent.subtract_life(card.atk)
 
-    def end_game(self):
+    def end_game(self) -> None:
         """
         Finaliza um jogo, registra o vencedor.
         """

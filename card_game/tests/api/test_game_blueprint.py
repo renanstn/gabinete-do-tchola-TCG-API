@@ -1,33 +1,17 @@
 from flask.testing import FlaskClient
 
-from adapters.repositories.factory import get_repository
-
-
-def test_hello(client: FlaskClient):
-    response = client.get("/game/hello")
-    assert response.status_code == 200
-    assert response.data.decode("utf-8") == "Hi from game blueprint!"
-
-
 def test_start_game(client: FlaskClient):
-    player_a = {"name": "Player A", "deck_id": "1"}
-    player_b = {"name": "Player B", "deck_id": "2"}
+    player_a = {"name": "Player A", "deck_id": "a"}
+    player_b = {"name": "Player B", "deck_id": "a"}
 
     response = client.post(
         "/game/start", json={"players": [player_a, player_b]}
     )
 
-    assert response.status_code == 200
-    repository = get_repository()
-    # Assert two players was created
-    assert len(repository.list_players()) == 2
-    # Assert game was created
-    assert len(repository.list_games()) == 1
-    # Assert player names are correct
-    assert repository.list_players()[0].name == player_a["name"]
-    assert repository.list_players()[1].name == player_b["name"]
-    # Assert game state is correct
-    game = repository.list_games()[0]
-    assert game.winner is None
-    assert game.turn is True
-    assert game.active is True
+    assert response.status_code == 201
+    body = response.get_json()
+    assert body["active"] is True
+
+    turn_response = client.get(f"/game/{body['game_id']}/check-turn")
+    assert turn_response.status_code == 200
+    assert turn_response.get_json()["is_first_player_turn"] is True

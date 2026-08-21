@@ -1,8 +1,5 @@
 from flask.testing import FlaskClient
 
-from adapters.repositories.factory import get_repository
-
-
 def test_hello(client: FlaskClient):
     response = client.get("/deck/hello")
     assert response.status_code == 200

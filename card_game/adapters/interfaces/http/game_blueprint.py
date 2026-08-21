@@ -1,25 +1,25 @@
-from flask import Blueprint, jsonify, request
+from uuid import UUID
+
+from flask import Blueprint, current_app, jsonify, request
 from pydantic import ValidationError
 
-from application.game_service import GameService
-from application.schemas.player_schema import CreatePlayerSchema
+from adapters.interfaces.http.schemas import CreatePlayerRequest
+from application.commands import StartGamePlayer
+from application.exceptions import ApplicationError
 
 game_blueprint = Blueprint("game", __name__, url_prefix="/game")
 
 
-@game_blueprint.route("/hello")
-def say_hi():
-    return "Hi from game blueprint!"
-
-
-@game_blueprint.route("/<game_id>/check_turn")
-def check_turn(game_id: int):
-    """
-    curl -X GET "http://localhost:5000/game/1/check_turn"
-    """
-    print(game_id)
-    GameService.check_turn(game_id)
-    return "todo"
+@game_blueprint.route("/<uuid:game_id>/check-turn")
+def check_turn(game_id: UUID):
+    service = current_app.extensions["game_service"]
+    try:
+        is_first_player_turn = service.check_turn(game_id)
+    except ApplicationError as error:
+        return jsonify({"error": str(error)}), 404
+    return jsonify(
+        {"game_id": str(game_id), "is_first_player_turn": is_first_player_turn}
+    )
 
 
 @game_blueprint.route("/start", methods=["POST"])
@@ -27,13 +27,29 @@ def start_game():
     """
     Given 2 players, start a new game.
     """
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"errors": [{"msg": "Corpo JSON inválido."}]}), 400
+
     try:
         players = [
-            CreatePlayerSchema(**player) for player in request.json["players"]
+            CreatePlayerRequest(**player) for player in payload["players"]
         ]
-    except ValidationError as err:
-        return jsonify({"errors": err.errors()}), 400
+    except (KeyError, TypeError, ValidationError) as error:
+        errors = (
+            error.errors()
+            if isinstance(error, ValidationError)
+            else [{"msg": str(error)}]
+        )
+        return jsonify({"errors": errors}), 400
 
-    GameService.start_game(players)
+    command = [
+        StartGamePlayer(name=player.name, deck_id=player.deck_id)
+        for player in players
+    ]
+    try:
+        game = current_app.extensions["game_service"].start_game(command)
+    except ApplicationError as error:
+        return jsonify({"error": str(error)}), 400
 
-    return "Game started"
+    return jsonify({"game_id": str(game.id), "active": game.active}), 201

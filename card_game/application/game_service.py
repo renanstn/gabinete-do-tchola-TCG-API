@@ -1,30 +1,39 @@
-from adapters.repositories.factory import get_repository
-from adapters.repositories.models.game import Game
-from adapters.repositories.models.player import Player
-from application.schemas.player_schema import CreatePlayerSchema
+from uuid import UUID
+
+from application.commands import StartGamePlayer
+from application.exceptions import GameNotFoundError, InvalidGameSetupError
+from application.ports.deck_repository import DeckRepository
+from application.ports.game_repository import GameRepository
+from domain.game import Game
+from domain.player import Player
 
 
 class GameService:
+    """Casos de uso de partida; não conhece Flask, SQLAlchemy ou arquivos."""
 
-    repository = get_repository()
+    def __init__(
+        self,
+        game_repository: GameRepository,
+        deck_repository: DeckRepository,
+    ):
+        self.game_repository = game_repository
+        self.deck_repository = deck_repository
 
-    @classmethod
-    def check_turn(cls, game_id: int) -> bool:
-        print(cls.repository)
-        print(game_id)
-        return True
+    def check_turn(self, game_id: UUID) -> bool:
+        game = self.game_repository.get_by_id(game_id)
+        if game is None:
+            raise GameNotFoundError(f"Partida {game_id} não encontrada.")
+        return game.active and game.turn
 
-    @classmethod
-    def start_game(cls, players: list[CreatePlayerSchema]) -> None:
+    def start_game(self, players: list[StartGamePlayer]) -> Game:
+        if len(players) != 2:
+            raise InvalidGameSetupError("Uma partida exige exatamente dois jogadores.")
+
         game_players = [
-            Player(
-                name=player.name,
-                hp=100,
-                cards_in_hand="",
-                table="",
-                cemetery="",
-            )
+            Player(name=player.name, deck=self.deck_repository.get_cards(player.deck_id))
             for player in players
         ]
-        game = Game(winner=None, turn=True, active=True, players=game_players)
-        cls.repository.save_game_state(game)
+        game = Game(game_players[0], game_players[1])
+        game.setup_game()
+        self.game_repository.save(game)
+        return game
