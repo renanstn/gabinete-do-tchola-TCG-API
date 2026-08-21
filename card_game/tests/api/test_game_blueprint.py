@@ -12,6 +12,9 @@ def test_start_game(client: FlaskClient):
     body = response.get_json()
     assert body["active"] is True
 
-    turn_response = client.get(f"/game/{body['game_id']}/check-turn")
+    turn_response = client.get(f"/game/{body['game_id']}/active-player")
     assert turn_response.status_code == 200
-    assert turn_response.get_json()["is_first_player_turn"] is True
+    assert (
+        turn_response.get_json()["active_player_id"]
+        == body["active_player_id"]
+    )

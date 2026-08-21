@@ -25,5 +25,6 @@ def test_start_game_uses_ports_and_sets_up_the_domain_game():
     )
 
     assert games.get_by_id(game.id) is game
+    assert game.active_player_id == game.player_a.id
     assert len(game.player_a.cards_in_hand) == 5
     assert len(game.player_b.cards_in_hand) == 5

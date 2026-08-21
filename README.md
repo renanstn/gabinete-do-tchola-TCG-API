@@ -55,28 +55,6 @@ python -m pytest
 flask --app app run --debug
 ```
 
-## Endpoints atuais
-
-Inicie uma partida usando IDs de arquivos de deck. O arquivo
-`domain/decks/deck_a.json`, por exemplo, é referenciado por `"deck_id": "a"`.
-
-```sh
-curl -X POST http://localhost:5000/game/start \
-  -H "Content-Type: application/json" \
-  -d '{
-    "players": [
-      {"name": "Player A", "deck_id": "a"},
-      {"name": "Player B", "deck_id": "a"}
-    ]
-  }'
-```
-
-A resposta contém `game_id`. Consulte o turno inicial com:
-
-```sh
-curl http://localhost:5000/game/<game_id>/check-turn
-```
-
 ## Próximos adaptadores
 
 - Repositório persistente de partidas (SQLite/PostgreSQL).

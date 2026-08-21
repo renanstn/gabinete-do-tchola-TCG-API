@@ -6,15 +6,15 @@ from domain.player import Player
 
 class Game:
     """
-    Instância de um jogo. Todo jogo tem um ID, 2 jogadores, e uma variável
-    booleana que indica de qual jogador é o turno atual.
+    Instância de um jogo. Todo jogo tem um ID, dois jogadores e identifica
+    explicitamente o jogador que possui o turno atual.
     """
 
     def __init__(self, player_a: Player, player_b: Player):
         self.id: uuid.UUID = uuid.uuid4()
         self.players: list[Player] = [player_a, player_b]
         self.winner: Player | None = None
-        self.turn: bool = True
+        self.active_player_id: uuid.UUID = player_a.id
         self.active: bool = True
 
     @property
@@ -38,16 +38,17 @@ class Game:
 
     def switch_turn(self) -> None:
         """
-        Troca o turno do jogador A para o jogador B.
+        Passa o turno para o oponente do jogador ativo.
         """
-        self.turn = not self.turn
+        _, opponent = self.get_active_player_and_opponent()
+        self.active_player_id = opponent.id
 
     def get_active_player_and_opponent(self) -> tuple[Player, Player]:
-        if self.turn:
-            active_player, opponent = self.player_a, self.player_b
-        else:
-            active_player, opponent = self.player_b, self.player_a
-        return active_player, opponent
+        if self.active_player_id == self.player_a.id:
+            return self.player_a, self.player_b
+        if self.active_player_id == self.player_b.id:
+            return self.player_b, self.player_a
+        raise RuntimeError("O jogador ativo não pertence a esta partida.")
 
     def end_play(self) -> None:
         """

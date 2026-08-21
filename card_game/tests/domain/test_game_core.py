@@ -13,7 +13,7 @@ def test_new_game(deck):
 
     game.setup_game()
 
-    assert game.turn == True
+    assert game.active_player_id == player_a.id
     # Verifica se cad aplayer tem 5 cartas na mão
     assert len(player_a.cards_in_hand) == 5
     assert len(player_b.cards_in_hand) == 5
@@ -43,7 +43,7 @@ def test_play_card(deck):
     game.end_play()
 
     # Verifica se o turno passou para o próximo jogador
-    assert game.turn is False
+    assert game.active_player_id == player_b.id
     # Verifica se o player B não apanhou
     assert player_b.hp == 10
     # Verifica a mesa e a mão do player A
@@ -78,7 +78,7 @@ def test_attack_on_hero_with_single_card(deck):
     game.end_play()
 
     # Verifica se o turno passou para o próximo jogador
-    assert game.turn is False
+    assert game.active_player_id == player_b.id
     # Verifica se o player B apanhou
     assert player_b.hp == 5
     # Verifica a mesa e a mão do player A
@@ -110,7 +110,7 @@ def test_attack_on_hero_with_multiple_cards(deck):
     game.end_play()
 
     # Verifica se o turno passou para o próximo jogador
-    assert game.turn is False
+    assert game.active_player_id == player_b.id
     # Verifica se o player B apanhou
     assert player_b.hp == 35
     # Verifica a mesa e a mão do player A
@@ -145,7 +145,7 @@ def test_attack_on_table_with_single_card(deck):
     game.end_play()
 
     # Verifica se o turno passou para o próximo jogador
-    assert game.turn is False
+    assert game.active_player_id == player_b.id
     # O hero do player B não pode ter apanhado
     assert player_b.hp == 10
     # A carta na mesa do player B deve ter morrido
@@ -186,7 +186,7 @@ def test_attack_on_table_with_single_card_without_kill(deck):
     game.end_play()
 
     # Verifica se o turno passou para o próximo jogador
-    assert game.turn is False
+    assert game.active_player_id == player_b.id
     # O hero do player B não pode ter apanhado
     assert player_b.hp == 10
     # A carta na mesa do player B deve estar viva
@@ -228,7 +228,7 @@ def test_attack_on_table_with_multiple_cards(deck):
     game.end_play()
 
     # Verifica se o turno passou para o próximo jogador
-    assert game.turn is False
+    assert game.active_player_id == player_b.id
     # O hero do player B não pode ter apanhado
     assert player_b.hp == 10
     # A carta na mesa do player B deve estar viva
@@ -272,7 +272,7 @@ def test_attack_on_table_and_hero_with_multiple_cards(deck):
     game.end_play()
 
     # Verifica se o turno passou para o próximo jogador
-    assert game.turn is False
+    assert game.active_player_id == player_b.id
     # O hero do player B deve ter apanhado
     assert player_b.hp == 5
     # A carta na mesa do player B deve estar morta
@@ -301,7 +301,7 @@ def test_game_with_multiples_rounds(deck):
     assert len(player_a.cards_in_hand) == 4
     assert len(player_a.table) == 1
     assert player_b.hp == 5
-    assert not game.turn
+    assert game.active_player_id == player_b.id
 
     # Jogada do player B
     player_b.play_card("1")
@@ -312,7 +312,7 @@ def test_game_with_multiples_rounds(deck):
     assert len(player_a.table) == 0
     assert len(player_a.cemetery) == 1
     assert player_a.hp == 10
-    assert game.turn
+    assert game.active_player_id == player_a.id
 
     # Jogada do player A (2 cartas seguidas, apenas para testar)
     player_a.play_card("2")

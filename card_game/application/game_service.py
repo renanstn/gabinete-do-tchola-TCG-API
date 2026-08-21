@@ -19,11 +19,11 @@ class GameService:
         self.game_repository = game_repository
         self.deck_repository = deck_repository
 
-    def check_turn(self, game_id: UUID) -> bool:
+    def get_active_player_id(self, game_id: UUID) -> UUID:
         game = self.game_repository.get_by_id(game_id)
         if game is None:
             raise GameNotFoundError(f"Partida {game_id} não encontrada.")
-        return game.active and game.turn
+        return game.active_player_id
 
     def start_game(self, players: list[StartGamePlayer]) -> Game:
         if len(players) != 2:

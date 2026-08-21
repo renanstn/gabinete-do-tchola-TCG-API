@@ -38,9 +38,10 @@ def test_setup_game(setup_game):
 
 def test_switch_turn(setup_game):
     game = setup_game
-    initial_turn = game.turn
+    initial_active_player_id = game.active_player_id
     game.switch_turn()
-    assert game.turn != initial_turn
+    assert game.active_player_id != initial_active_player_id
+    assert game.active_player_id == game.player_b.id
 
 
 def test_get_active_player_and_opponent(setup_game):
@@ -60,7 +61,7 @@ def test_end_play(setup_game):
     active_player, opponent = game.get_active_player_and_opponent()
     active_player.table.append(active_player.cards_in_hand.pop())
     game.end_play()
-    assert game.turn == False
+    assert game.active_player_id == game.player_b.id
     assert opponent.is_alive()
 
 

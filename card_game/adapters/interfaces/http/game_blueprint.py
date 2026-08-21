@@ -10,15 +10,15 @@ from application.exceptions import ApplicationError
 game_blueprint = Blueprint("game", __name__, url_prefix="/game")
 
 
-@game_blueprint.route("/<uuid:game_id>/check-turn")
-def check_turn(game_id: UUID):
+@game_blueprint.route("/<uuid:game_id>/active-player")
+def get_active_player(game_id: UUID):
     service = current_app.extensions["game_service"]
     try:
-        is_first_player_turn = service.check_turn(game_id)
+        active_player_id = service.get_active_player_id(game_id)
     except ApplicationError as error:
         return jsonify({"error": str(error)}), 404
     return jsonify(
-        {"game_id": str(game_id), "is_first_player_turn": is_first_player_turn}
+        {"game_id": str(game_id), "active_player_id": str(active_player_id)}
     )
 
 
@@ -52,4 +52,10 @@ def start_game():
     except ApplicationError as error:
         return jsonify({"error": str(error)}), 400
 
-    return jsonify({"game_id": str(game.id), "active": game.active}), 201
+    return jsonify(
+        {
+            "game_id": str(game.id),
+            "active": game.active,
+            "active_player_id": str(game.active_player_id),
+        }
+    ), 201
