@@ -1,6 +1,7 @@
 import uuid
 from enum import Enum
 
+
 class CardType(Enum):
     CHARACTER = "character"
     ITEM = "item"

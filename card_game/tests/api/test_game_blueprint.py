@@ -1,5 +1,6 @@
 from flask.testing import FlaskClient
 
+
 def test_start_game(client: FlaskClient):
     player_a = {"name": "Player A", "deck_id": "a"}
     player_b = {"name": "Player B", "deck_id": "a"}

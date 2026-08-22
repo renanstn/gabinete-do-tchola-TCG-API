@@ -52,10 +52,13 @@ def start_game():
     except ApplicationError as error:
         return jsonify({"error": str(error)}), 400
 
-    return jsonify(
-        {
-            "game_id": str(game.id),
-            "active": game.active,
-            "active_player_id": str(game.active_player_id),
-        }
-    ), 201
+    return (
+        jsonify(
+            {
+                "game_id": str(game.id),
+                "active": game.active,
+                "active_player_id": str(game.active_player_id),
+            }
+        ),
+        201,
+    )

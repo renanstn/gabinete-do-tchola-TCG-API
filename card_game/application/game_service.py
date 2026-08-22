@@ -27,10 +27,15 @@ class GameService:
 
     def start_game(self, players: list[StartGamePlayer]) -> Game:
         if len(players) != 2:
-            raise InvalidGameSetupError("Uma partida exige exatamente dois jogadores.")
+            raise InvalidGameSetupError(
+                "Uma partida exige exatamente dois jogadores."
+            )
 
         game_players = [
-            Player(name=player.name, deck=self.deck_repository.get_cards(player.deck_id))
+            Player(
+                name=player.name,
+                deck=self.deck_repository.get_cards(player.deck_id),
+            )
             for player in players
         ]
         game = Game(game_players[0], game_players[1])

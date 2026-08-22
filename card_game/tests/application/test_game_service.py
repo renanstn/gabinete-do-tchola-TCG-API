@@ -1,4 +1,5 @@
-from adapters.repositories.in_memory_game_repository import InMemoryGameRepository
+from adapters.repositories.in_memory_game_repository import \
+    InMemoryGameRepository
 from application.commands import StartGamePlayer
 from application.game_service import GameService
 from application.ports.deck_repository import DeckRepository
@@ -8,7 +9,12 @@ from domain.card import Card, CardType
 class FakeDeckRepository(DeckRepository):
     def get_cards(self, deck_id: str) -> list[Card]:
         return [
-            Card(hp=1, atk=1, name=f"{deck_id}-{number}", card_type=CardType.CHARACTER)
+            Card(
+                hp=1,
+                atk=1,
+                name=f"{deck_id}-{number}",
+                card_type=CardType.CHARACTER,
+            )
             for number in range(5)
         ]
 

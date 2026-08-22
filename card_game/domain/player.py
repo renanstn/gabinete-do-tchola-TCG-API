@@ -1,4 +1,5 @@
 import uuid
+
 from domain.card import Card
 
 
