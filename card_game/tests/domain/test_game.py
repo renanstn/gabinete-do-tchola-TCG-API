@@ -55,12 +55,12 @@ def test_get_active_player_and_opponent(setup_game):
     assert opponent == game.player_a
 
 
-def test_end_play(setup_game):
+def test_end_turn(setup_game):
     game = setup_game
     game.setup_game()
     active_player, opponent = game.get_active_player_and_opponent()
     active_player.table.append(active_player.cards_in_hand.pop())
-    game.end_play()
+    game.end_turn()
     assert game.active_player_id == game.player_b.id
     assert opponent.is_alive()
 

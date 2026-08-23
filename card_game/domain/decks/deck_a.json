@@ -1,5 +1,5 @@
 {
-    "name": "Test Deck",
+    "name": "Test Deck A",
     "description": "Just a simple description",
     "cards": [
         {
@@ -15,71 +15,15 @@
             "card_type": "character",
             "description": "Card description...",
             "hp": 10,
-            "atk": 3,
+            "atk": 5,
             "image": ""
         },
         {
             "name": "Card C",
             "card_type": "character",
             "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
-            "image": ""
-        },
-        {
-            "name": "Card D",
-            "card_type": "character",
-            "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
-            "image": ""
-        },
-        {
-            "name": "Card E",
-            "card_type": "character",
-            "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
-            "image": ""
-        },
-        {
-            "name": "Card F",
-            "card_type": "character",
-            "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
-            "image": ""
-        },
-        {
-            "name": "Card G",
-            "card_type": "character",
-            "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
-            "image": ""
-        },
-        {
-            "name": "Card H",
-            "card_type": "character",
-            "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
-            "image": ""
-        },
-        {
-            "name": "Card I",
-            "card_type": "character",
-            "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
-            "image": ""
-        },
-        {
-            "name": "Card J",
-            "card_type": "character",
-            "description": "Card description...",
-            "hp": 10,
-            "atk": 3,
+            "hp": 15,
+            "atk": 4,
             "image": ""
         }
     ]

@@ -1,5 +1,6 @@
-from adapters.repositories.in_memory_game_repository import \
-    InMemoryGameRepository
+from adapters.repositories.in_memory_game_repository import (
+    InMemoryGameRepository,
+)
 from application.commands import StartGamePlayer
 from application.game_service import GameService
 from application.ports.deck_repository import DeckRepository

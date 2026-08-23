@@ -30,7 +30,6 @@ class GameService:
             raise InvalidGameSetupError(
                 "Uma partida exige exatamente dois jogadores."
             )
-
         game_players = [
             Player(
                 name=player.name,
@@ -42,3 +41,24 @@ class GameService:
         game.setup_game()
         self.game_repository.save(game)
         return game
+
+    def play_card(self, game_id: UUID, player_id: UUID, card_id: UUID) -> None:
+        game = self.game_repository.get_by_id(game_id)
+        if game is None:
+            raise GameNotFoundError(f"Partida {game_id} não encontrada.")
+        if game.active_player_id != player_id:
+            raise InvalidTurnError("Não é a vez deste jogador.")
+        card = game.get_card(card_id)
+        if card is None:
+            raise CardNotFoundError(f"Cartão {card_id} não encontrado.")
+        game.play_card(card)
+        self.game_repository.save(game)
+
+    def end_turn(self, game_id: UUID, player_id: UUID) -> None:
+        game = self.game_repository.get_by_id(game_id)
+        if game is None:
+            raise GameNotFoundError(f"Partida {game_id} não encontrada.")
+        if game.active_player_id != player_id:
+            raise InvalidTurnError("Não é a vez deste jogador.")
+        game.end_turn()
+        self.game_repository.save(game)

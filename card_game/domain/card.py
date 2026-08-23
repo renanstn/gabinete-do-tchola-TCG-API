@@ -5,11 +5,12 @@ from enum import Enum
 class CardType(Enum):
     CHARACTER = "character"
     ITEM = "item"
+    STAGE = "stage"
 
 
 class Card:
     """
-    Instância de uma carta. Cartas podem ser personagens ou items.
+    Instância de uma carta. Cartas podem ser personagens, intens ou stages.
     """
 
     def __init__(
@@ -30,7 +31,7 @@ class Card:
         self.description: str | None = description
         self.image: str | None = image
         self.can_attack: bool = False
-        self.items: list[str] = []  # IDs dos itens aplicados
+        self.items: list[uuid.UUID] = []
 
     def take_damage(self, damage: int) -> None:
         self.hp -= damage

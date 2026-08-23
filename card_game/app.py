@@ -5,8 +5,9 @@ from flask import Flask
 from adapters.decks.json_deck_repository import JsonDeckRepository
 from adapters.interfaces.http.deck_blueprint import deck_blueprint
 from adapters.interfaces.http.game_blueprint import game_blueprint
-from adapters.repositories.in_memory_game_repository import \
-    InMemoryGameRepository
+from adapters.repositories.in_memory_game_repository import (
+    InMemoryGameRepository,
+)
 from application.game_service import GameService
 
 

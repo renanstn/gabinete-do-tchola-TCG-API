@@ -40,7 +40,7 @@ def test_play_card(deck):
     # Player A baixa uma carta na mesa
     player_a.play_card("1")
     # Player A finaliza sua jogada
-    game.end_play()
+    game.end_turn()
 
     # Verifica se o turno passou para o próximo jogador
     assert game.active_player_id == player_b.id
@@ -51,8 +51,8 @@ def test_play_card(deck):
     assert len(player_a.cards_in_hand) == 4
 
     # No próximo turno, a carta deve atacar
-    game.end_play()
-    game.end_play()
+    game.end_turn()
+    game.end_turn()
     assert player_a.table[0].can_attack is True
     assert player_b.hp == 5
 
@@ -75,7 +75,7 @@ def test_attack_on_hero_with_single_card(deck):
     # Manualmente ativa a carta jogada
     player_a.table[0].activate()
     # Player A finaliza sua jogada
-    game.end_play()
+    game.end_turn()
 
     # Verifica se o turno passou para o próximo jogador
     assert game.active_player_id == player_b.id
@@ -107,7 +107,7 @@ def test_attack_on_hero_with_multiple_cards(deck):
     player_a.table[1].activate()
     player_a.play_card("3")
     player_a.table[2].activate()
-    game.end_play()
+    game.end_turn()
 
     # Verifica se o turno passou para o próximo jogador
     assert game.active_player_id == player_b.id
@@ -142,7 +142,7 @@ def test_attack_on_table_with_single_card(deck):
     player_b.table[0].activate()
     assert len(player_b.table) == 1
     # Player A finaliza sua jogada
-    game.end_play()
+    game.end_turn()
 
     # Verifica se o turno passou para o próximo jogador
     assert game.active_player_id == player_b.id
@@ -183,7 +183,7 @@ def test_attack_on_table_with_single_card_without_kill(deck):
     player_b.table[0].activate()
     assert len(player_b.table) == 1
     # Player A finaliza sua jogada
-    game.end_play()
+    game.end_turn()
 
     # Verifica se o turno passou para o próximo jogador
     assert game.active_player_id == player_b.id
@@ -225,7 +225,7 @@ def test_attack_on_table_with_multiple_cards(deck):
     player_b.table[0].activate()
     assert len(player_b.table) == 1
     # Player A finaliza sua jogada
-    game.end_play()
+    game.end_turn()
 
     # Verifica se o turno passou para o próximo jogador
     assert game.active_player_id == player_b.id
@@ -269,7 +269,7 @@ def test_attack_on_table_and_hero_with_multiple_cards(deck):
     player_b.table[0].activate()
     assert len(player_b.table) == 1
     # Player A finaliza sua jogada
-    game.end_play()
+    game.end_turn()
 
     # Verifica se o turno passou para o próximo jogador
     assert game.active_player_id == player_b.id
@@ -297,7 +297,7 @@ def test_game_with_multiples_rounds(deck):
     # Jogada do player A
     player_a.play_card("1")
     player_a.table[0].activate()
-    game.end_play()
+    game.end_turn()
     assert len(player_a.cards_in_hand) == 4
     assert len(player_a.table) == 1
     assert player_b.hp == 5
@@ -306,7 +306,7 @@ def test_game_with_multiples_rounds(deck):
     # Jogada do player B
     player_b.play_card("1")
     player_b.table[0].activate()
-    game.end_play()
+    game.end_turn()
     assert len(player_a.cards_in_hand) == 4
     assert len(player_b.table) == 1
     assert len(player_a.table) == 0
@@ -319,7 +319,7 @@ def test_game_with_multiples_rounds(deck):
     player_a.table[0].activate()
     player_a.play_card("3")
     player_a.table[1].activate()
-    game.end_play()
+    game.end_turn()
     assert len(player_a.cards_in_hand) == 2
     assert len(player_a.table) == 2
     assert player_b.hp == 0

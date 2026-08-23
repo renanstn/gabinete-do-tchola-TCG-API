@@ -50,7 +50,7 @@ class Game:
             return self.player_b, self.player_a
         raise RuntimeError("O jogador ativo não pertence a esta partida.")
 
-    def end_play(self) -> None:
+    def end_turn(self) -> None:
         """
         Termina a jogada de um jogador.
         - Faz as ações necessárias (cartas atacam)
@@ -78,6 +78,7 @@ class Game:
             if not card.can_attack:
                 continue
             if opponent.has_cards_on_table():
+                # FIXME: Uma carta não deve atacar todas as cartas do oponente, apenas uma
                 for enemy_card in opponent.table:
                     enemy_card.take_damage(card.atk)
                     if enemy_card.is_dead():
