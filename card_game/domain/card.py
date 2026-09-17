@@ -1,5 +1,9 @@
+import logging
 import uuid
 from enum import Enum
+
+
+logger = logging.getLogger(__name__)
 
 
 class CardType(Enum):
@@ -10,7 +14,7 @@ class CardType(Enum):
 
 class Card:
     """
-    Instância de uma carta. Cartas podem ser personagens, intens ou stages.
+    Instância de uma carta. Cartas podem ser personagens, intens ou cenários.
     """
 
     def __init__(
@@ -22,14 +26,17 @@ class Card:
         id: str | None = None,
         description: str | None = None,
         image: str | None = None,
+        sound: str | None = None,
     ):
         self.id: str = id or str(uuid.uuid4())
         self.hp: int = hp
+        self.initial_hp: int = hp
         self.atk: int = atk
         self.name: str = name
         self.card_type: CardType = card_type
         self.description: str | None = description
         self.image: str | None = image
+        self.sound: str | None = sound
         self.can_attack: bool = False
         self.items: list[uuid.UUID] = []
 
@@ -38,6 +45,9 @@ class Card:
 
     def is_dead(self) -> bool:
         return self.hp <= 0
+
+    def is_hurted(self) -> bool:
+        return self.hp != self.initial_hp
 
     def activate(self) -> None:
         self.can_attack = True

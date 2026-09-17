@@ -8,7 +8,8 @@
             "description": "Card description...",
             "hp": 10,
             "atk": 3,
-            "image": ""
+            "image": "",
+            "sound": ""
         },
         {
             "name": "Card B",
@@ -16,7 +17,8 @@
             "description": "Card description...",
             "hp": 10,
             "atk": 5,
-            "image": ""
+            "image": "",
+            "sound": ""
         },
         {
             "name": "Card C",
@@ -24,7 +26,8 @@
             "description": "Card description...",
             "hp": 15,
             "atk": 4,
-            "image": ""
+            "image": "",
+            "sound": ""
         }
     ]
 }

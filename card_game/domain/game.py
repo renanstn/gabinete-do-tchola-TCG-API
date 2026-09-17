@@ -1,7 +1,11 @@
+import logging
 import random
 import uuid
 
 from domain.player import Player
+
+
+logger = logging.getLogger(__name__)
 
 
 class Game:
@@ -30,6 +34,7 @@ class Game:
         - Embaralha os decks dos players
         - Cada player saca 5 cartas iniciais.
         """
+        logger.debug("Shuffling decks and drawing initial cards")
         random.shuffle(self.player_a.deck)
         random.shuffle(self.player_b.deck)
         for _ in range(5):
@@ -42,6 +47,7 @@ class Game:
         """
         _, opponent = self.get_active_player_and_opponent()
         self.active_player_id = opponent.id
+        logger.debug("Switching turn to opponent")
 
     def get_active_player_and_opponent(self) -> tuple[Player, Player]:
         if self.active_player_id == self.player_a.id:
@@ -58,6 +64,7 @@ class Game:
         - Ativa as cartas recém baixadas
         - Passa o turno para o próximo jogador
         """
+        logger.debug("Ending turn")
         active_player, opponent = self.get_active_player_and_opponent()
         self.compute_battle(active_player, opponent)
         for card in active_player.table:
@@ -74,21 +81,26 @@ class Game:
         - Mata as cartas cuja vida < 0
         - Ataca o herói caso não haja mais cartas para defender
         """
+        logger.debug("Computing battle...")
         for card in active_player.table:
             if not card.can_attack:
+                logger.debug(f"Card {card.name} cannot attack yet")
                 continue
             if opponent.has_cards_on_table():
-                # FIXME: Uma carta não deve atacar todas as cartas do oponente, apenas uma
-                for enemy_card in opponent.table:
-                    enemy_card.take_damage(card.atk)
-                    if enemy_card.is_dead():
-                        opponent.move_card_to_cemetery(enemy_card)
+                target = opponent.get_next_card_target()
+                logger.debug(f"Card {card.name} attacking {target.name}")
+                target.take_damage(card.atk)
+                if target.is_dead():
+                    logger.debug(f"Card {card.atk} killed {target.name}")
+                    opponent.move_card_to_cemetery(target)
             else:
+                logger.debug(f"Card {card.atk} attacked the hero")
                 opponent.subtract_life(card.atk)
 
     def end_game(self) -> None:
         """
         Finaliza um jogo, registra o vencedor.
         """
+        logger.debug("Ending game...")
         self.winner = self.player_a if self.player_a.hp > 0 else self.player_b
         self.active = False

@@ -1,6 +1,10 @@
+import logging
 import uuid
 
 from domain.card import Card
+
+
+logger = logging.getLogger(__name__)
 
 
 class Player:
@@ -64,3 +68,8 @@ class Player:
 
     def can_play_card(self) -> bool:
         return not any(card for card in self.table if card.can_attack is False)
+
+    def get_next_card_target(self) -> Card | None:
+        if self.table:
+            return self.table[0]
+        return None
