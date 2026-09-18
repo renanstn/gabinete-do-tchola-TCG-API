@@ -10,6 +10,11 @@ from application.exceptions import ApplicationError
 game_blueprint = Blueprint("game", __name__, url_prefix="/game")
 
 
+@game_blueprint.route("/hello")
+def say_hi() -> str:
+    return "Hi from game blueprint!"
+
+
 @game_blueprint.route("/<uuid:game_id>/active-player")
 def get_active_player(game_id: UUID):
     service = current_app.extensions["game_service"]
@@ -24,12 +29,9 @@ def get_active_player(game_id: UUID):
 
 @game_blueprint.route("/start", methods=["POST"])
 def start_game():
-    """
-    Given 2 players, start a new game.
-    """
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
-        return jsonify({"errors": [{"msg": "Corpo JSON inválido."}]}), 400
+        return jsonify({"errors": [{"msg": "JSON body invalid."}]}), 400
 
     try:
         players = [

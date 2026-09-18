@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game API Tester</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .player {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            margin-top: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 16px;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Start Game</h1>
+
+    <div class="player">
+        <h2>Player 1</h2>
+
+        <label>
+            Name
+            <input id="player1-name" value="Alice">
+        </label>
+
+        <label>
+            Deck ID
+            <input id="player1-deck" value="deck-1">
+        </label>
+    </div>
+
+    <div class="player">
+        <h2>Player 2</h2>
+
+        <label>
+            Name
+            <input id="player2-name" value="Bob">
+        </label>
+
+        <label>
+            Deck ID
+            <input id="player2-deck" value="deck-2">
+        </label>
+    </div>
+
+    <button onclick="startGame()">Start Game</button>
+
+    <h2>Response</h2>
+    <pre id="response">Waiting...</pre>
+
+    <script>
+        async function startGame() {
+            const body = {
+                players: [
+                    {
+                        name: document.getElementById("player1-name").value,
+                        deck_id: document.getElementById("player1-deck").value
+                    },
+                    {
+                        name: document.getElementById("player2-name").value,
+                        deck_id: document.getElementById("player2-deck").value
+                    }
+                ]
+            };
+
+            const responseElement = document.getElementById("response");
+
+            try {
+                const response = await fetch(
+                    "http://127.0.0.1:5000/game/start",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(body)
+                    }
+                );
+
+                const data = await response.json();
+
+                responseElement.textContent = JSON.stringify(
+                    {
+                        status: response.status,
+                        body: data
+                    },
+                    null,
+                    2
+                );
+
+            } catch (error) {
+                responseElement.textContent = error.toString();
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -43,6 +43,7 @@ o domínio e os casos de uso não devem conhecer SQLAlchemy.
 
 ```powershell
 cd card_game
+py -3.12 -m venv .venv
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip

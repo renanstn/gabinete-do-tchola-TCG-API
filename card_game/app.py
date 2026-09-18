@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from flask import Flask
+from flask_cors import CORS
 
 from adapters.decks.json_deck_repository import JsonDeckRepository
 from adapters.interfaces.http.deck_blueprint import deck_blueprint
@@ -14,6 +15,7 @@ from application.game_service import GameService
 def create_app(game_service: GameService | None = None) -> Flask:
     """Ponto de composição: conecta adaptadores às portas da aplicação."""
     app = Flask(__name__)
+    CORS(app)
     if game_service is None:
         game_service = GameService(
             game_repository=InMemoryGameRepository(),
