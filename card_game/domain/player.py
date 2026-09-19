@@ -2,6 +2,7 @@ import logging
 import uuid
 
 from domain.card import Card
+from domain.exceptions import InvalidMoveError
 
 
 logger = logging.getLogger(__name__)
@@ -11,6 +12,8 @@ class Player:
     """
     Um jogador, possui um deck de cartas e faz ações de baixar cartas na mesa.
     """
+
+    MAX_TABLE_CARDS = 5
 
     def __init__(self, name: str, deck: list[Card]):
         self.id: uuid.UUID = uuid.uuid4()
@@ -31,8 +34,12 @@ class Player:
         Registra uma carta jogada na mesa pelo jogador.
         - Insere o card na table list.
         """
+        if self.is_table_full():
+            raise InvalidMoveError(
+                f"The table is full (maximum of {self.MAX_TABLE_CARDS} cards)."
+            )
         if not self.can_play_card():
-            return
+            raise InvalidMoveError("You have already played a card this turn.")
         selected_card = self.get_card_by_id(card_id)
         self.remove_card_from_hand(selected_card.id)
         self.table.append(selected_card)
@@ -47,14 +54,10 @@ class Player:
         for card in self.cards_in_hand:
             if card.id == card_id:
                 return card
-        raise Exception(
-            f"Player {self.name} don't have any card with ID {card_id}"
-        )
+        raise InvalidMoveError("The card is not in this player's hand.")
 
     def remove_card_from_hand(self, card_id: str) -> None:
-        self.cards_in_hand = [
-            card for card in self.cards_in_hand if card.id != card_id
-        ]
+        self.cards_in_hand = [card for card in self.cards_in_hand if card.id != card_id]
 
     def remove_card_from_table(self, card_id: str) -> None:
         self.table = [card for card in self.table if card.id != card_id]
@@ -67,7 +70,12 @@ class Player:
         self.cemetery.append(card)
 
     def can_play_card(self) -> bool:
-        return not any(card for card in self.table if card.can_attack is False)
+        return not self.is_table_full() and not any(
+            card for card in self.table if card.can_attack is False
+        )
+
+    def is_table_full(self) -> bool:
+        return len(self.table) >= self.MAX_TABLE_CARDS
 
     def get_next_card_target(self) -> Card | None:
         if self.table:

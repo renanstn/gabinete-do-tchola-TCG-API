@@ -1,0 +1,97 @@
+{
+    "id": "6c2e32a4-644d-4be5-bd8a-62b683b08757",
+    "name": "Test Deck A",
+    "description": "Just a simple description",
+    "cards": [
+        {
+            "name": "Zefir",
+            "card_type": "character",
+            "description": "",
+            "hp": 3,
+            "atk": 3,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Mira",
+            "card_type": "character",
+            "description": "",
+            "hp": 2,
+            "atk": 3,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Lumi",
+            "card_type": "character",
+            "description": "",
+            "hp": 1,
+            "atk": 3,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Orin",
+            "card_type": "character",
+            "description": "",
+            "hp": 4,
+            "atk": 5,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Zora",
+            "card_type": "character",
+            "description": "",
+            "hp": 4,
+            "atk": 1,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Kiro",
+            "card_type": "character",
+            "description": "",
+            "hp": 5,
+            "atk": 3,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Fenrik",
+            "card_type": "character",
+            "description": "",
+            "hp": 1,
+            "atk": 3,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Borin",
+            "card_type": "character",
+            "description": "",
+            "hp": 4,
+            "atk": 1,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Vex",
+            "card_type": "character",
+            "description": "",
+            "hp": 5,
+            "atk": 1,
+            "image": "",
+            "sound": ""
+        },
+        {
+            "name": "Nara",
+            "card_type": "character",
+            "description": "",
+            "hp": 2,
+            "atk": 2,
+            "image": "",
+            "sound": ""
+        }
+    ]
+}

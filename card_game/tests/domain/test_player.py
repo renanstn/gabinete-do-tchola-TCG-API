@@ -2,6 +2,7 @@ import pytest
 
 from domain.card import Card, CardType
 from domain.player import Player
+from domain.exceptions import InvalidMoveError
 
 
 @pytest.fixture
@@ -98,3 +99,34 @@ def test_can_play_card(setup_player):
     assert player.can_play_card() == True
     player.play_card(card_id)
     assert player.can_play_card() == False
+
+
+def test_table_limit_and_space_after_a_death(setup_player):
+    player = setup_player
+    for _ in range(6):
+        player.draw_card()
+    for card in player.cards_in_hand[:5]:
+        player.play_card(card.id)
+        card.activate()
+    remaining_card = player.cards_in_hand[0]
+    assert not player.can_play_card()
+    with pytest.raises(InvalidMoveError, match="The table is full"):
+        player.play_card(remaining_card.id)
+    assert len(player.table) == 5
+    assert player.cards_in_hand == [remaining_card]
+
+    player.move_card_to_cemetery(player.table[0])
+    assert player.can_play_card()
+    player.play_card(remaining_card.id)
+    assert len(player.table) == 5
+    assert player.cards_in_hand == []
+
+
+def test_missing_card_raises_domain_error_without_changing_hand(setup_player):
+    player = setup_player
+    player.draw_card()
+    original_hand = player.cards_in_hand.copy()
+    with pytest.raises(InvalidMoveError, match="not in this player's hand"):
+        player.play_card("missing-card")
+    assert player.cards_in_hand == original_hand
+    assert player.table == []

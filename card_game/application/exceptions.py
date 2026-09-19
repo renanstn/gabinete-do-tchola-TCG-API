@@ -12,3 +12,7 @@ class InvalidGameSetupError(ApplicationError):
 
 class DeckNotFoundError(ApplicationError):
     pass
+
+
+class InvalidMoveError(ApplicationError):
+    pass

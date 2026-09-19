@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from adapters.repositories.in_memory_game_repository import (
     InMemoryGameRepository,
 )
@@ -8,7 +10,7 @@ from domain.card import Card, CardType
 
 
 class FakeDeckRepository(DeckRepository):
-    def get_cards(self, deck_id: str) -> list[Card]:
+    def get_cards(self, deck_id: UUID) -> list[Card]:
         return [
             Card(
                 hp=1,
@@ -26,8 +28,12 @@ def test_start_game_uses_ports_and_sets_up_the_domain_game():
 
     game = service.start_game(
         [
-            StartGamePlayer(name="A", deck_id="first"),
-            StartGamePlayer(name="B", deck_id="second"),
+            StartGamePlayer(
+                name="A", deck_id=UUID("6c2e32a4-644d-4be5-bd8a-62b683b08757")
+            ),
+            StartGamePlayer(
+                name="B", deck_id=UUID("a2a10a78-4276-4538-98a7-8a89c49c9aa5")
+            ),
         ]
     )
 

@@ -2,6 +2,7 @@ import logging
 import random
 import uuid
 
+from domain.exceptions import InvalidMoveError
 from domain.player import Player
 
 
@@ -33,6 +34,7 @@ class Game:
         """
         - Embaralha os decks dos players
         - Cada player saca 5 cartas iniciais.
+        - O jogador ativo compra uma carta ao iniciar o primeiro turno.
         """
         logger.debug("Shuffling decks and drawing initial cards")
         random.shuffle(self.player_a.deck)
@@ -40,13 +42,20 @@ class Game:
         for _ in range(5):
             self.player_a.draw_card()
             self.player_b.draw_card()
+        self.start_turn()
+
+    def start_turn(self) -> None:
+        """Compra uma carta para o jogador que está iniciando o turno."""
+        active_player, _ = self.get_active_player_and_opponent()
+        active_player.draw_card()
 
     def switch_turn(self) -> None:
         """
-        Passa o turno para o oponente do jogador ativo.
+        Passa o turno para o oponente e realiza sua compra de início de turno.
         """
         _, opponent = self.get_active_player_and_opponent()
         self.active_player_id = opponent.id
+        self.start_turn()
         logger.debug("Switching turn to opponent")
 
     def get_active_player_and_opponent(self) -> tuple[Player, Player]:
@@ -54,9 +63,20 @@ class Game:
             return self.player_a, self.player_b
         if self.active_player_id == self.player_b.id:
             return self.player_b, self.player_a
-        raise RuntimeError("O jogador ativo não pertence a esta partida.")
+        raise RuntimeError("The active player does not belong to this game.")
 
-    def end_turn(self) -> None:
+    def _validate_turn(self, player_id: uuid.UUID) -> None:
+        if not self.active:
+            raise InvalidMoveError("The game has already ended.")
+        if self.active_player_id != player_id:
+            raise InvalidMoveError("It is not this player's turn.")
+
+    def play_card(self, player_id: uuid.UUID, card_id: str) -> None:
+        self._validate_turn(player_id)
+        active_player, _ = self.get_active_player_and_opponent()
+        active_player.play_card(card_id)
+
+    def end_turn(self, player_id: uuid.UUID) -> None:
         """
         Termina a jogada de um jogador.
         - Faz as ações necessárias (cartas atacam)
@@ -64,6 +84,7 @@ class Game:
         - Ativa as cartas recém baixadas
         - Passa o turno para o próximo jogador
         """
+        self._validate_turn(player_id)
         logger.debug("Ending turn")
         active_player, opponent = self.get_active_player_and_opponent()
         self.compute_battle(active_player, opponent)

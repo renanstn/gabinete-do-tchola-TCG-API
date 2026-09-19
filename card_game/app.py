@@ -20,7 +20,7 @@ def create_app(game_service: GameService | None = None) -> Flask:
         game_service = GameService(
             game_repository=InMemoryGameRepository(),
             deck_repository=JsonDeckRepository(
-                Path(app.root_path) / "domain" / "decks"
+                Path(app.root_path) / "resources" / "decks"
             ),
         )
 

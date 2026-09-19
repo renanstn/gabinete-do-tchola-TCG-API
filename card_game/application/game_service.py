@@ -1,9 +1,14 @@
 from uuid import UUID
 
 from application.commands import StartGamePlayer
-from application.exceptions import GameNotFoundError, InvalidGameSetupError
+from application.exceptions import (
+    GameNotFoundError,
+    InvalidGameSetupError,
+    InvalidMoveError,
+)
 from application.ports.deck_repository import DeckRepository
 from application.ports.game_repository import GameRepository
+from domain.exceptions import InvalidMoveError as DomainInvalidMoveError
 from domain.game import Game
 from domain.player import Player
 
@@ -22,14 +27,12 @@ class GameService:
     def get_active_player_id(self, game_id: UUID) -> UUID:
         game = self.game_repository.get_by_id(game_id)
         if game is None:
-            raise GameNotFoundError(f"Partida {game_id} não encontrada.")
+            raise GameNotFoundError(f"Game {game_id} not found.")
         return game.active_player_id
 
     def start_game(self, players: list[StartGamePlayer]) -> Game:
         if len(players) != 2:
-            raise InvalidGameSetupError(
-                "Uma partida exige exatamente dois jogadores."
-            )
+            raise InvalidGameSetupError("A game requires exactly two players.")
         game_players = [
             Player(
                 name=player.name,
@@ -42,23 +45,26 @@ class GameService:
         self.game_repository.save(game)
         return game
 
-    def play_card(self, game_id: UUID, player_id: UUID, card_id: UUID) -> None:
+    def get_game(self, game_id: UUID) -> Game:
         game = self.game_repository.get_by_id(game_id)
         if game is None:
-            raise GameNotFoundError(f"Partida {game_id} não encontrada.")
-        if game.active_player_id != player_id:
-            raise InvalidTurnError("Não é a vez deste jogador.")
-        card = game.get_card(card_id)
-        if card is None:
-            raise CardNotFoundError(f"Cartão {card_id} não encontrado.")
-        game.play_card(card)
-        self.game_repository.save(game)
+            raise GameNotFoundError(f"Game {game_id} not found.")
+        return game
 
-    def end_turn(self, game_id: UUID, player_id: UUID) -> None:
-        game = self.game_repository.get_by_id(game_id)
-        if game is None:
-            raise GameNotFoundError(f"Partida {game_id} não encontrada.")
-        if game.active_player_id != player_id:
-            raise InvalidTurnError("Não é a vez deste jogador.")
-        game.end_turn()
+    def play_card(self, game_id: UUID, player_id: UUID, card_id: str) -> Game:
+        game = self.get_game(game_id)
+        try:
+            game.play_card(player_id, card_id)
+        except DomainInvalidMoveError as error:
+            raise InvalidMoveError(str(error)) from error
         self.game_repository.save(game)
+        return game
+
+    def end_turn(self, game_id: UUID, player_id: UUID) -> Game:
+        game = self.get_game(game_id)
+        try:
+            game.end_turn(player_id)
+        except DomainInvalidMoveError as error:
+            raise InvalidMoveError(str(error)) from error
+        self.game_repository.save(game)
+        return game
