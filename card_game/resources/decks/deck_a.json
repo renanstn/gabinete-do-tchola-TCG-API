@@ -92,6 +92,46 @@
             "atk": 2,
             "image": "",
             "sound": ""
+        },
+        {
+            "name": "Amuleto Vital",
+            "description": "Aumenta a vida em 3.",
+            "card_type": "item",
+            "hp": 0,
+            "atk": 0,
+            "hp_modifier": 3
+        },
+        {
+            "name": "Veneno",
+            "description": "Reduz a vida em 2.",
+            "card_type": "item",
+            "hp": 0,
+            "atk": 0,
+            "hp_modifier": -2
+        },
+        {
+            "name": "Espada Encantada",
+            "description": "Aumenta o ataque em 2.",
+            "card_type": "item",
+            "hp": 0,
+            "atk": 0,
+            "atk_modifier": 2
+        },
+        {
+            "name": "Maldição da Fraqueza",
+            "description": "Reduz o ataque em 2.",
+            "card_type": "item",
+            "hp": 0,
+            "atk": 0,
+            "atk_modifier": -2
+        },
+        {
+            "name": "Rede de Contenção",
+            "description": "Impede a próxima fase de ataque do personagem.",
+            "card_type": "item",
+            "hp": 0,
+            "atk": 0,
+            "deactivate": true
         }
     ]
 }

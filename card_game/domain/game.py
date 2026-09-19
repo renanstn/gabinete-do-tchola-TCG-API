@@ -2,6 +2,7 @@ import logging
 import random
 import uuid
 
+from domain.card import CardType
 from domain.exceptions import InvalidMoveError
 from domain.player import Player
 
@@ -47,6 +48,7 @@ class Game:
     def start_turn(self) -> None:
         """Compra uma carta para o jogador que está iniciando o turno."""
         active_player, _ = self.get_active_player_and_opponent()
+        active_player.has_played_card = False
         active_player.draw_card()
 
     def switch_turn(self) -> None:
@@ -71,10 +73,34 @@ class Game:
         if self.active_player_id != player_id:
             raise InvalidMoveError("It is not this player's turn.")
 
-    def play_card(self, player_id: uuid.UUID, card_id: str) -> None:
+    def play_card(
+        self, player_id: uuid.UUID, card_id: str, target_card_id: str | None = None
+    ) -> None:
         self._validate_turn(player_id)
         active_player, _ = self.get_active_player_and_opponent()
-        active_player.play_card(card_id)
+        card = active_player.get_card_by_id(card_id)
+        if card.card_type != CardType.ITEM:
+            if target_card_id is not None:
+                raise InvalidMoveError("Only items accept a target.")
+            active_player.play_card(card_id)
+            return
+        if active_player.has_played_card:
+            raise InvalidMoveError("You have already played a card this turn.")
+        for owner in self.players:
+            for target in owner.table:
+                if (
+                    target.id == target_card_id
+                    and target.card_type == CardType.CHARACTER
+                ):
+                    target.apply_item(card)
+                    active_player.remove_card_from_hand(card.id)
+                    active_player.has_played_card = True
+                    if target.is_dead():
+                        owner.move_card_to_cemetery(target)
+                    return
+        raise InvalidMoveError(
+            "Items require a character target on either player's table."
+        )
 
     def end_turn(self, player_id: uuid.UUID) -> None:
         """

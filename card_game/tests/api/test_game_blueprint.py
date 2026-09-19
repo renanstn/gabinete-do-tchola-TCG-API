@@ -39,7 +39,9 @@ def test_play_and_end_turn(client):
     state = start_state(client)
     path = f"/game/{state['game_id']}"
     player, opponent = state["players"]
-    card = player["cards_in_hand"][0]
+    card = next(
+        card for card in player["cards_in_hand"] if card["card_type"] == "character"
+    )
     payload = {"player_id": player["id"], "card_id": card["id"]}
     response = client.post(path + "/play-card", json=payload)
     assert response.status_code == 200
@@ -173,9 +175,9 @@ def test_turn_draws_and_full_table_rejects_card_without_changing_state(client):
     state = start_state(client)
     path = f"/game/{state['game_id']}"
     assert len(state["players"][0]["cards_in_hand"]) == 6
-    assert state["players"][0]["deck_count"] == 4
+    assert state["players"][0]["deck_count"] == 9
     assert len(state["players"][1]["cards_in_hand"]) == 5
-    assert state["players"][1]["deck_count"] == 5
+    assert state["players"][1]["deck_count"] == 10
 
     # Keep both heroes alive so five full rounds can be exercised via HTTP.
     from uuid import UUID
@@ -185,6 +187,14 @@ def test_turn_draws_and_full_table_rejects_card_without_changing_state(client):
     )
     for player in game.players:
         player.hp = 1000
+    # Supply characters explicitly: the example deck now also contains items.
+    from domain.card import Card, CardType
+
+    game.player_a.cards_in_hand = [
+        Card(hp=5, atk=1, name=f"Character {n}", card_type=CardType.CHARACTER)
+        for n in range(6)
+    ]
+    state = client.get(path).get_json()
 
     for _ in range(5):
         player = state["players"][0]
@@ -192,7 +202,11 @@ def test_turn_draws_and_full_table_rejects_card_without_changing_state(client):
             path + "/play-card",
             json={
                 "player_id": player["id"],
-                "card_id": player["cards_in_hand"][0]["id"],
+                "card_id": next(
+                    card["id"]
+                    for card in player["cards_in_hand"]
+                    if card["card_type"] == "character"
+                ),
             },
         )
         assert response.status_code == 200
@@ -213,9 +227,56 @@ def test_turn_draws_and_full_table_rejects_card_without_changing_state(client):
         path + "/play-card",
         json={
             "player_id": player["id"],
-            "card_id": player["cards_in_hand"][0]["id"],
+            "card_id": next(
+                card["id"]
+                for card in player["cards_in_hand"]
+                if card["card_type"] == "character"
+            ),
         },
     )
     assert response.status_code == 400
     assert response.get_json()["error"] == "The table is full (maximum of 5 cards)."
     assert client.get(path).get_json() == state
+
+
+def test_item_target_validation_and_serialization(client):
+    from uuid import UUID
+    from domain.card import Card, CardType
+
+    state = start_state(client)
+    path = f"/game/{state['game_id']}"
+    game = client.application.extensions["game_service"].get_game(
+        UUID(state["game_id"])
+    )
+    target = Card(hp=5, atk=3, name="Target", card_type=CardType.CHARACTER)
+    target.activate()
+    equipment = Card(
+        hp=0,
+        atk=0,
+        name="Curse",
+        card_type=CardType.ITEM,
+        hp_modifier=-1,
+        atk_modifier=-2,
+        deactivate=True,
+    )
+    game.player_b.table = [target]
+    game.player_a.cards_in_hand = [equipment]
+    payload = {"player_id": str(game.player_a.id), "card_id": equipment.id}
+    before = client.get(path).get_json()
+    for invalid in (None, "", 123, [], {}, "missing"):
+        response = client.post(
+            path + "/play-card", json={**payload, "target_card_id": invalid}
+        )
+        assert response.status_code == 400
+        assert client.get(path).get_json() == before
+    response = client.post(
+        path + "/play-card", json={**payload, "target_card_id": target.id}
+    )
+    assert response.status_code == 200
+    result = response.get_json()
+    assert result["players"][0]["cards_in_hand"] == []
+    assert result["players"][0]["can_play_item"] is False
+    applied = result["players"][1]["table"][0]
+    assert (applied["hp"], applied["atk"], applied["can_attack"]) == (4, 1, False)
+    assert applied["items"][0]["id"] == equipment.id
+    assert applied["items"][0]["deactivate"] is True

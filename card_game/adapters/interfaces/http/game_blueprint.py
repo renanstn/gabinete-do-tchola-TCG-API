@@ -73,6 +73,10 @@ def serialize_game(game):
             "card_type": card.card_type.value,
             "description": card.description,
             "can_attack": card.can_attack,
+            "hp_modifier": card.hp_modifier,
+            "atk_modifier": card.atk_modifier,
+            "deactivate": card.deactivate,
+            "items": [serialize_card(item) for item in card.items],
         }
 
     return {
@@ -87,6 +91,7 @@ def serialize_game(game):
                 "hp": player.hp,
                 "deck_count": len(player.deck),
                 "can_play_card": player.can_play_card(),
+                "can_play_item": not player.has_played_card,
                 **{
                     zone: [serialize_card(card) for card in getattr(player, zone)]
                     for zone in ("cards_in_hand", "table", "cemetery")
@@ -122,7 +127,15 @@ def make_move(game_id: UUID):
             card_id = payload.get("card_id")
             if not isinstance(card_id, str) or not card_id:
                 return jsonify({"error": "card_id is required."}), 400
-            game = service.play_card(game_id, player_id, card_id)
+            target_card_id = payload.get("target_card_id")
+            if target_card_id is not None and (
+                not isinstance(target_card_id, str) or not target_card_id
+            ):
+                return (
+                    jsonify({"error": "target_card_id must be a non-empty string."}),
+                    400,
+                )
+            game = service.play_card(game_id, player_id, card_id, target_card_id)
         else:
             game = service.end_turn(game_id, player_id)
         return jsonify(serialize_game(game))

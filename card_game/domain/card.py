@@ -27,6 +27,9 @@ class Card:
         description: str | None = None,
         image: str | None = None,
         sound: str | None = None,
+        hp_modifier: int = 0,
+        atk_modifier: int = 0,
+        deactivate: bool = False,
     ):
         self.id: str = id or str(uuid.uuid4())
         self.hp: int = hp
@@ -38,7 +41,10 @@ class Card:
         self.image: str | None = image
         self.sound: str | None = sound
         self.can_attack: bool = False
-        self.items: list[uuid.UUID] = []
+        self.items: list[Card] = []
+        self.hp_modifier = hp_modifier
+        self.atk_modifier = atk_modifier
+        self.deactivate = deactivate
 
     def take_damage(self, damage: int) -> None:
         self.hp -= damage
@@ -54,3 +60,11 @@ class Card:
 
     def has_items(self) -> bool:
         return bool(self.items)
+
+    def apply_item(self, item: "Card") -> None:
+        self.hp += item.hp_modifier
+        self.initial_hp += item.hp_modifier
+        self.atk = max(0, self.atk + item.atk_modifier)
+        if item.deactivate:
+            self.can_attack = False
+        self.items.append(item)

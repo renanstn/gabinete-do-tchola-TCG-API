@@ -32,8 +32,11 @@ class JsonDeckRepository(DeckRepository):
         return Card(
             name=str(definition["name"]),
             card_type=CardType(str(definition["card_type"])),
-            hp=int(definition["hp"]),
-            atk=int(definition["atk"]),
+            hp=int(definition.get("hp", 0)),
+            atk=int(definition.get("atk", 0)),
+            hp_modifier=int(definition.get("hp_modifier", 0)),
+            atk_modifier=int(definition.get("atk_modifier", 0)),
+            deactivate=definition.get("deactivate", False),
             description=str(definition.get("description") or ""),
             image=str(definition.get("image") or "") or None,
         )

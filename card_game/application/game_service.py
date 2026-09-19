@@ -51,10 +51,16 @@ class GameService:
             raise GameNotFoundError(f"Game {game_id} not found.")
         return game
 
-    def play_card(self, game_id: UUID, player_id: UUID, card_id: str) -> Game:
+    def play_card(
+        self,
+        game_id: UUID,
+        player_id: UUID,
+        card_id: str,
+        target_card_id: str | None = None,
+    ) -> Game:
         game = self.get_game(game_id)
         try:
-            game.play_card(player_id, card_id)
+            game.play_card(player_id, card_id, target_card_id)
         except DomainInvalidMoveError as error:
             raise InvalidMoveError(str(error)) from error
         self.game_repository.save(game)

@@ -65,3 +65,31 @@ def test_bundled_decks_are_loadable_from_resources():
         assert [card.name for card in cards] == [
             card["name"] for card in definition["cards"]
         ]
+
+
+def test_loads_item_effects_and_creates_independent_instances(tmp_path):
+    from domain.card import CardType
+
+    (tmp_path / "items.json").write_text(
+        json.dumps(
+            {
+                "id": str(DECK_ID),
+                "cards": [
+                    {
+                        "name": "Curse",
+                        "card_type": "item",
+                        "hp_modifier": -2,
+                        "atk_modifier": -1,
+                        "deactivate": True,
+                    }
+                ],
+            }
+        )
+    )
+    repository = JsonDeckRepository(tmp_path)
+    first = repository.get_cards(DECK_ID)[0]
+    second = repository.get_cards(DECK_ID)[0]
+    assert first.card_type == CardType.ITEM
+    assert (first.hp_modifier, first.atk_modifier, first.deactivate) == (-2, -1, True)
+    assert first.id != second.id
+    assert first.items is not second.items

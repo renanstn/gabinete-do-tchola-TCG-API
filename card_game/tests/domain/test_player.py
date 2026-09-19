@@ -108,6 +108,7 @@ def test_table_limit_and_space_after_a_death(setup_player):
     for card in player.cards_in_hand[:5]:
         player.play_card(card.id)
         card.activate()
+        player.has_played_card = False
     remaining_card = player.cards_in_hand[0]
     assert not player.can_play_card()
     with pytest.raises(InvalidMoveError, match="The table is full"):
