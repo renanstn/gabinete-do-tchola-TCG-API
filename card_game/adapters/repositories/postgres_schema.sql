@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS games (
+    id UUID PRIMARY KEY,
+    state JSONB NOT NULL
+);
