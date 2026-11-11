@@ -99,6 +99,10 @@ A API fica em http://localhost:5000. Para conferir:
 curl http://localhost:5000/
 ```
 
+A ferramenta de testes sobe junto no serviço `tools`, disponível em
+http://localhost:8080/test.html. Veja [tools/README.md](tools/README.md)
+para configurar os decks e executar sem Docker.
+
 O retorno esperado é `{"service":"card-game"}`. O Compose espera o healthcheck
 do PostgreSQL e executa `flask --app app init-db` antes de iniciar a API.
 O código em `card_game` é montado no container e o Flask roda com `--debug`,
@@ -115,6 +119,7 @@ local. Para trocar as portas, crie um `.env` na raiz (lido pelo Compose):
 ```dotenv
 API_PORT=5001
 POSTGRES_PORT=5433
+TOOLS_PORT=8081
 ```
 
 Nesse exemplo, acesse a API em http://localhost:5001. As portas internas e a URL

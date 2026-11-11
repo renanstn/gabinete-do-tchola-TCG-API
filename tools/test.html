@@ -3,131 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game API Tester</title>
-
+    <title>Testador do jogo</title>
     <style>
-        body {
-            font-family: sans-serif;
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .player {
-            border: 1px solid #ccc;
-            padding: 16px;
-            margin-bottom: 16px;
-            border-radius: 8px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        input {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 8px;
-            margin-top: 4px;
-        }
-
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-
-        pre {
-            background: #f4f4f4;
-            padding: 16px;
-            overflow: auto;
-        }
+        body { font-family: sans-serif; max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        fieldset, article { margin: 12px 0; padding: 12px; }
+        label { display: block; margin: 8px 0; }
+        input, select { padding: 6px; max-width: 100%; box-sizing: border-box; }
+        input { width: 450px; }
+        button { padding: 8px; margin: 4px; cursor: pointer; }
+        pre { background: #eee; padding: 12px; overflow: auto; }
+        .players { display: flex; flex-wrap: wrap; gap: 16px; }
+        .players > article { flex: 1; min-width: 280px; border: 1px solid #aaa; }
+        li { margin-bottom: 12px; overflow-wrap: anywhere; }
+        #message { white-space: pre-wrap; }
     </style>
+    <script src="test.js" defer></script>
 </head>
-
 <body>
-
-    <h1>Start Game</h1>
-
-    <div class="player">
-        <h2>Player 1</h2>
-
-        <label>
-            Name
-            <input id="player1-name" value="Alice">
-        </label>
-
-        <label>
-            Deck ID
-            <input id="player1-deck" value="deck-1">
-        </label>
-    </div>
-
-    <div class="player">
-        <h2>Player 2</h2>
-
-        <label>
-            Name
-            <input id="player2-name" value="Bob">
-        </label>
-
-        <label>
-            Deck ID
-            <input id="player2-deck" value="deck-2">
-        </label>
-    </div>
-
-    <button onclick="startGame()">Start Game</button>
-
-    <h2>Response</h2>
-    <pre id="response">Waiting...</pre>
-
-    <script>
-        async function startGame() {
-            const body = {
-                players: [
-                    {
-                        name: document.getElementById("player1-name").value,
-                        deck_id: document.getElementById("player1-deck").value
-                    },
-                    {
-                        name: document.getElementById("player2-name").value,
-                        deck_id: document.getElementById("player2-deck").value
-                    }
-                ]
-            };
-
-            const responseElement = document.getElementById("response");
-
-            try {
-                const response = await fetch(
-                    "http://127.0.0.1:5000/game/start",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(body)
-                    }
-                );
-
-                const data = await response.json();
-
-                responseElement.textContent = JSON.stringify(
-                    {
-                        status: response.status,
-                        body: data
-                    },
-                    null,
-                    2
-                );
-
-            } catch (error) {
-                responseElement.textContent = error.toString();
-            }
-        }
-    </script>
-
+    <h1>Testador do jogo</h1>
+    <label>Endereço da API <input id="api-url" value="http://127.0.0.1:5000" type="url"></label>
+    <button id="check-api">Verificar API</button>
+    <fieldset>
+        <legend>Nova partida</legend>
+        <label>Nome do jogador 1 <input id="player1-name" value="Alice"></label>
+        <label>Deck do jogador 1 <input id="player1-deck" value="6c2e32a4-644d-4be5-bd8a-62b683b08757"></label>
+        <label>Nome do jogador 2 <input id="player2-name" value="Bob"></label>
+        <label>Deck do jogador 2 <input id="player2-deck" value="6c2e32a4-644d-4be5-bd8a-62b683b08757"></label>
+        <button id="start-game">Iniciar partida</button>
+    </fieldset>
+    <fieldset>
+        <legend>Consultar / retomar partida</legend>
+        <label>ID da partida <input id="game-id" placeholder="UUID retornado ao criar a partida"></label>
+        <button id="load-game">Carregar / atualizar estado</button>
+        <button id="active-player">Consultar jogador ativo</button>
+    </fieldset>
+    <p id="message" role="status" aria-live="polite">Aguardando ação.</p>
+    <section id="game" hidden>
+        <h2>Estado da partida</h2>
+        <p id="summary"></p>
+        <p>Os ataques acontecem automaticamente ao encerrar o turno. As duas mãos ficam visíveis para testes.</p>
+        <div id="players" class="players"></div>
+        <fieldset>
+            <legend>Jogada</legend>
+            <label>Jogador <select id="move-player"></select></label>
+            <label>Carta na mão <select id="move-card"></select></label>
+            <label>Alvo do item (personagem na mesa de qualquer jogador) <select id="move-target"></select></label>
+            <button id="play-card">Jogar carta</button>
+            <button id="end-turn">Encerrar turno</button>
+            <p>Você pode selecionar o outro jogador para testar a validação de turno da API.</p>
+        </fieldset>
+        <details><summary>JSON completo do estado</summary><pre id="state"></pre></details>
+    </section>
+    <h2>Histórico de requisições</h2>
+    <button id="clear-log">Limpar histórico</button>
+    <pre id="response">Nenhuma requisição.</pre>
 </body>
 </html>

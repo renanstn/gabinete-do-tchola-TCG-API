@@ -14,6 +14,13 @@ x-postgres: &postgres
     start_period: 10s
 
 services:
+  tools:
+    image: nginx:alpine
+    volumes:
+      - ./tools:/usr/share/nginx/html:ro
+    ports:
+      - "127.0.0.1:${TOOLS_PORT:-8080}:80"
+
   api:
     <<: *app
     environment:
