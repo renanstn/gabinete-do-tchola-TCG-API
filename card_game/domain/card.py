@@ -14,7 +14,7 @@ class CardType(Enum):
 
 class Card:
     """
-    Instância de uma carta. Cartas podem ser personagens, intens ou cenários.
+    Cartas podem ser personagens, itens ou cenários.
     """
 
     def __init__(
@@ -42,9 +42,9 @@ class Card:
         self.sound: str | None = sound
         self.can_attack: bool = False
         self.items: list[Card] = []
-        self.hp_modifier = hp_modifier
-        self.atk_modifier = atk_modifier
-        self.deactivate = deactivate
+        self.hp_modifier = hp_modifier      # for items
+        self.atk_modifier = atk_modifier    # for items
+        self.deactivate = deactivate        # for items
 
     def take_damage(self, damage: int) -> None:
         self.hp -= damage
