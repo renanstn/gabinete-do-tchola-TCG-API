@@ -6,17 +6,16 @@ from adapters.repositories.in_memory_game_repository import (
 from application.commands import StartGamePlayer
 from application.game_service import GameService
 from application.ports.deck_repository import DeckRepository
-from domain.card import Card, CardType
+from domain.card import Card, CharacterCard
 
 
 class FakeDeckRepository(DeckRepository):
     def get_cards(self, deck_id: UUID) -> list[Card]:
         return [
-            Card(
+            CharacterCard(
                 hp=1,
                 atk=1,
                 name=f"{deck_id}-{number}",
-                card_type=CardType.CHARACTER,
             )
             for number in range(5)
         ]

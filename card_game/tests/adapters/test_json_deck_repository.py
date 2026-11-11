@@ -67,7 +67,8 @@ def test_bundled_decks_are_loadable_from_resources():
         ]
 
 
-def test_loads_item_effects_and_creates_independent_instances(tmp_path):
+@pytest.mark.parametrize("absolute", [False, True])
+def test_loads_item_effects_and_creates_independent_instances(tmp_path, absolute):
     from domain.card import CardType
 
     (tmp_path / "items.json").write_text(
@@ -78,9 +79,11 @@ def test_loads_item_effects_and_creates_independent_instances(tmp_path):
                     {
                         "name": "Curse",
                         "card_type": "item",
-                        "hp_modifier": -2,
-                        "atk_modifier": -1,
+                        "hp_modifier": 0 if absolute else -2,
+                        "atk_modifier": 0 if absolute else -1,
                         "deactivate": True,
+                        "hp_set": 1 if absolute else None,
+                        "atk_set": 0 if absolute else None,
                     }
                 ],
             }
@@ -90,6 +93,33 @@ def test_loads_item_effects_and_creates_independent_instances(tmp_path):
     first = repository.get_cards(DECK_ID)[0]
     second = repository.get_cards(DECK_ID)[0]
     assert first.card_type == CardType.ITEM
-    assert (first.hp_modifier, first.atk_modifier, first.deactivate) == (-2, -1, True)
+    assert (first.hp_set, first.atk_set) == ((1, 0) if absolute else (None, None))
+    assert (first.hp_modifier, first.atk_modifier, first.deactivate) == (
+        (0, 0, True) if absolute else (-2, -1, True)
+    )
     assert first.id != second.id
-    assert first.items is not second.items
+    first.atk_modifier = 99
+    assert second.atk_modifier == (0 if absolute else -1)
+
+
+def test_deck_loader_rejects_mixed_item_effect_modes():
+    with pytest.raises(ValueError, match="cannot combine"):
+        JsonDeckRepository._to_card(
+            {
+                "name": "Invalid",
+                "card_type": "item",
+                "hp_set": 1,
+                "atk_modifier": 2,
+            }
+        )
+
+
+def test_loads_each_concrete_card_type():
+    from domain.card import CharacterCard, ItemCard, StageCard
+
+    for definition, expected in [
+        ({"name": "Hero", "card_type": "character", "hp": 5, "atk": 2}, CharacterCard),
+        ({"name": "Sword", "card_type": "item", "atk_modifier": 2}, ItemCard),
+        ({"name": "Forest", "card_type": "stage"}, StageCard),
+    ]:
+        assert isinstance(JsonDeckRepository._to_card(definition), expected)

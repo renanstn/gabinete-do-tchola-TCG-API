@@ -1,19 +1,19 @@
 import pytest
 
-from domain.card import Card, CardType
+from domain.card import CharacterCard, ItemCard, StageCard
 from domain.exceptions import InvalidMoveError
 from domain.game import Game
 from domain.player import Player
 
 
 def character():
-    card = Card(hp=5, atk=3, name="Character", card_type=CardType.CHARACTER)
+    card = CharacterCard(hp=5, atk=3, name="Character")
     card.activate()
     return card
 
 
 def item(**effects):
-    return Card(hp=0, atk=0, name="Item", card_type=CardType.ITEM, **effects)
+    return ItemCard(name="Item", **effects)
 
 
 @pytest.fixture
@@ -31,6 +31,12 @@ def game():
         ({"atk_modifier": -2}, 5, 1),
         ({"atk_modifier": -10}, 5, 0),
         ({"hp_modifier": 1, "atk_modifier": 2}, 6, 5),
+        ({"hp_set": 1}, 1, 3),
+        ({"hp_set": 9}, 9, 3),
+        ({"atk_set": 5}, 5, 5),
+        ({"atk_set": 0}, 5, 0),
+        ({"atk_set": -2}, 5, 0),
+        ({"hp_set": 1, "atk_set": 5}, 1, 5),
     ],
 )
 def test_apply_item_to_either_player(game, owner_index, effects, hp, atk):
@@ -107,14 +113,19 @@ def test_invalid_target_is_atomic(game, target_zone):
     elif target_zone == "cemetery":
         game.player_b.cemetery.append(target)
     elif target_zone in ("item", "stage"):
-        target.card_type = CardType(target_zone)
+        target = (
+            ItemCard("Invalid target")
+            if target_zone == "item"
+            else StageCard("Invalid target")
+        )
         game.player_b.table.append(target)
     with pytest.raises(InvalidMoveError, match="character target"):
         game.play_card(game.player_a.id, equipment.id, target.id)
     assert game.player_a.cards_in_hand == [equipment]
     assert not game.player_a.has_played_card
-    assert target.hp == 5
-    assert not target.items
+    if isinstance(target, CharacterCard):
+        assert target.hp == 5
+        assert not target.items
 
 
 def test_item_requires_target_and_respects_turn_and_game_state(game):
@@ -138,3 +149,63 @@ def test_character_then_item_rejected(game):
     with pytest.raises(InvalidMoveError, match="already played"):
         game.play_card(game.player_a.id, equipment.id, target.id)
     assert target.atk == 3
+
+
+def test_set_hp_changes_current_life_without_resetting_initial_life(game):
+    target = character()
+    target.take_damage(2)
+    game.player_b.table.append(target)
+    equipment = item(hp_set=1)
+    game.player_a.cards_in_hand.append(equipment)
+    game.play_card(game.player_a.id, equipment.id, target.id)
+    assert target.hp == 1
+    assert target.initial_hp == 5
+    assert target.is_hurted()
+    target.apply_item(item(hp_modifier=3))
+    assert (target.hp, target.initial_hp) == (4, 8)
+
+
+@pytest.mark.parametrize("hp", [0, -1])
+def test_set_hp_can_kill_target(game, hp):
+    target = character()
+    game.player_b.table.append(target)
+    equipment = item(hp_set=hp)
+    game.player_a.cards_in_hand.append(equipment)
+    game.play_card(game.player_a.id, equipment.id, target.id)
+    assert not game.player_b.table
+    assert game.player_b.cemetery == [target]
+    assert target.items == [equipment]
+
+
+def test_set_replaces_previous_effects_and_later_modifiers_still_apply():
+    target = character()
+    target.apply_item(item(hp_modifier=3, atk_modifier=2))
+    target.apply_item(item(hp_set=1, atk_set=5))
+    assert (target.hp, target.atk) == (1, 5)
+    target.apply_item(item(hp_modifier=3, atk_modifier=2))
+    assert (target.hp, target.atk) == (4, 7)
+
+
+@pytest.mark.parametrize("set_field", ["hp_set", "atk_set"])
+@pytest.mark.parametrize("set_value", [0, 1])
+@pytest.mark.parametrize("modifier_field", ["hp_modifier", "atk_modifier"])
+@pytest.mark.parametrize("modifier_value", [-2, 3])
+def test_item_rejects_mixed_effect_modes(
+    set_field, set_value, modifier_field, modifier_value
+):
+    with pytest.raises(ValueError, match="cannot combine"):
+        item(**{set_field: set_value, modifier_field: modifier_value})
+
+
+def test_invalid_mutated_item_is_rejected_before_changing_target(game):
+    target = character()
+    equipment = item(hp_set=1)
+    equipment.atk_modifier = 2
+    game.player_b.table.append(target)
+    game.player_a.cards_in_hand.append(equipment)
+    with pytest.raises(ValueError, match="cannot combine"):
+        game.play_card(game.player_a.id, equipment.id, target.id)
+    assert (target.hp, target.initial_hp, target.atk) == (5, 5, 3)
+    assert not target.items
+    assert game.player_a.cards_in_hand == [equipment]
+    assert not game.player_a.has_played_card

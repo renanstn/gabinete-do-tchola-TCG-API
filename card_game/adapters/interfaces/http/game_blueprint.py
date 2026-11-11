@@ -5,6 +5,7 @@ from pydantic import ValidationError
 
 from adapters.interfaces.http.schemas import CreatePlayerRequest
 from application.commands import StartGamePlayer
+from domain.card import CharacterCard, ItemCard
 from application.exceptions import ApplicationError, GameNotFoundError
 
 game_blueprint = Blueprint("game", __name__, url_prefix="/game")
@@ -65,19 +66,28 @@ def serialize_game(game):
     """Estado completo para o testador local (inclui as duas mãos)."""
 
     def serialize_card(card):
-        return {
+        data = {
             "id": card.id,
             "name": card.name,
-            "hp": card.hp,
-            "atk": card.atk,
             "card_type": card.card_type.value,
             "description": card.description,
-            "can_attack": card.can_attack,
-            "hp_modifier": card.hp_modifier,
-            "atk_modifier": card.atk_modifier,
-            "deactivate": card.deactivate,
-            "items": [serialize_card(item) for item in card.items],
         }
+        if isinstance(card, CharacterCard):
+            data.update(
+                hp=card.hp,
+                atk=card.atk,
+                can_attack=card.can_attack,
+                items=[serialize_card(item) for item in card.items],
+            )
+        elif isinstance(card, ItemCard):
+            data.update(
+                hp_modifier=card.hp_modifier,
+                atk_modifier=card.atk_modifier,
+                deactivate=card.deactivate,
+                hp_set=card.hp_set,
+                atk_set=card.atk_set,
+            )
+        return data
 
     return {
         "game_id": str(game.id),

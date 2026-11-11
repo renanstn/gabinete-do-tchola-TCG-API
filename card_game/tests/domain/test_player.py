@@ -1,16 +1,13 @@
 import pytest
 
-from domain.card import Card, CardType
+from domain.card import CharacterCard
 from domain.player import Player
 from domain.exceptions import InvalidMoveError
 
 
 @pytest.fixture
 def setup_deck():
-    return [
-        Card(hp=5, atk=3, name="Card A1", card_type=CardType.CHARACTER)
-        for _ in range(10)
-    ]
+    return [CharacterCard(hp=5, atk=3, name="Card A1") for _ in range(10)]
 
 
 @pytest.fixture

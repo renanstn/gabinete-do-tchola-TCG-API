@@ -1,7 +1,7 @@
 import logging
 import uuid
 
-from domain.card import Card, CardType
+from domain.card import Card, CharacterCard
 from domain.exceptions import InvalidMoveError
 
 
@@ -21,7 +21,7 @@ class Player:
         self.hp: int = 10
         self.deck: list[Card] = deck
         self.cards_in_hand: list[Card] = []
-        self.table: list[Card] = []
+        self.table: list[CharacterCard] = []
         self.cemetery: list[Card] = []
         self.has_played_card: bool = False
 
@@ -42,7 +42,7 @@ class Player:
         if not self.can_play_card():
             raise InvalidMoveError("You have already played a card this turn.")
         selected_card = self.get_card_by_id(card_id)
-        if selected_card.card_type != CardType.CHARACTER:
+        if not isinstance(selected_card, CharacterCard):
             raise InvalidMoveError(
                 "Only characters can be played directly on the table."
             )
@@ -81,7 +81,7 @@ class Player:
     def is_table_full(self) -> bool:
         return len(self.table) >= self.MAX_TABLE_CARDS
 
-    def get_next_card_target(self) -> Card | None:
+    def get_next_card_target(self) -> CharacterCard | None:
         if self.table:
             return self.table[0]
         return None

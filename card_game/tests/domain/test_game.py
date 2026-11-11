@@ -1,20 +1,14 @@
 import pytest
 
-from domain.card import Card, CardType
+from domain.card import CharacterCard
 from domain.game import Game
 from domain.player import Player
 
 
 @pytest.fixture
 def setup_players():
-    deck_a = [
-        Card(hp=5, atk=3, name="Card A1", card_type=CardType.CHARACTER)
-        for _ in range(10)
-    ]
-    deck_b = [
-        Card(hp=4, atk=2, name="Card B1", card_type=CardType.CHARACTER)
-        for _ in range(10)
-    ]
+    deck_a = [CharacterCard(hp=5, atk=3, name="Card A1") for _ in range(10)]
+    deck_b = [CharacterCard(hp=4, atk=2, name="Card B1") for _ in range(10)]
     player_a = Player(name="Player A", deck=deck_a)
     player_b = Player(name="Player B", deck=deck_b)
     return player_a, player_b

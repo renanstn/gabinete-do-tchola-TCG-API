@@ -2,7 +2,7 @@ import logging
 import random
 import uuid
 
-from domain.card import CardType
+from domain.card import CharacterCard, ItemCard
 from domain.exceptions import InvalidMoveError
 from domain.player import Player
 
@@ -79,7 +79,7 @@ class Game:
         self._validate_turn(player_id)
         active_player, _ = self.get_active_player_and_opponent()
         card = active_player.get_card_by_id(card_id)
-        if card.card_type != CardType.ITEM:
+        if not isinstance(card, ItemCard):
             if target_card_id is not None:
                 raise InvalidMoveError("Only items accept a target.")
             active_player.play_card(card_id)
@@ -88,10 +88,7 @@ class Game:
             raise InvalidMoveError("You have already played a card this turn.")
         for owner in self.players:
             for target in owner.table:
-                if (
-                    target.id == target_card_id
-                    and target.card_type == CardType.CHARACTER
-                ):
+                if target.id == target_card_id and isinstance(target, CharacterCard):
                     target.apply_item(card)
                     active_player.remove_card_from_hand(card.id)
                     active_player.has_played_card = True

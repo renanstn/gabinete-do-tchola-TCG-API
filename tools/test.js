@@ -14,13 +14,17 @@ function option(select, value, label) {
 }
 
 function cardLabel(card) {
-    return `${card.name} (${card.card_type}) | HP ${card.hp} | ATK ${card.atk}`;
+    const label = `${card.name} (${card.card_type})`;
+    return card.card_type === 'character' ? `${label} | HP ${card.hp} | ATK ${card.atk}` : label;
 }
 
 function cardDetails(card) {
-    let text = `${cardLabel(card)} | pode atacar: ${card.can_attack ? 'sim' : 'não'}`;
+    let text = cardLabel(card);
+    if (card.card_type === 'character') text += ` | pode atacar: ${card.can_attack ? 'sim' : 'não'}`;
     if (card.description) text += ` | ${card.description}`;
     if (card.card_type === 'item') {
+        if (card.hp_set != null) text += ` | define HP: ${card.hp_set}`;
+        if (card.atk_set != null) text += ` | define ATK: ${card.atk_set}`;
         text += ` | modifica HP: ${card.hp_modifier}, ATK: ${card.atk_modifier}, inativa: ${card.deactivate}`;
     }
     return text;
@@ -34,7 +38,7 @@ function renderZone(parent, title, cards) {
     for (const card of cards) {
         const item = document.createElement('li');
         item.textContent = cardDetails(card);
-        if (card.items.length) renderZone(item, 'Itens equipados', card.items);
+        if (card.items?.length) renderZone(item, 'Itens equipados', card.items);
         list.append(item);
     }
     parent.append(list);

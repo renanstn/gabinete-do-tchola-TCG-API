@@ -5,7 +5,7 @@ from pathlib import Path
 
 from application.exceptions import DeckNotFoundError
 from application.ports.deck_repository import DeckRepository
-from domain.card import Card, CardType
+from domain.card import Card, CardType, CharacterCard, ItemCard, StageCard
 
 
 class JsonDeckRepository(DeckRepository):
@@ -29,14 +29,32 @@ class JsonDeckRepository(DeckRepository):
 
     @staticmethod
     def _to_card(definition: dict[str, object]) -> Card:
-        return Card(
+        common = dict(
             name=str(definition["name"]),
-            card_type=CardType(str(definition["card_type"])),
-            hp=int(definition.get("hp", 0)),
-            atk=int(definition.get("atk", 0)),
-            hp_modifier=int(definition.get("hp_modifier", 0)),
-            atk_modifier=int(definition.get("atk_modifier", 0)),
-            deactivate=definition.get("deactivate", False),
             description=str(definition.get("description") or ""),
             image=str(definition.get("image") or "") or None,
+            sound=str(definition.get("sound") or "") or None,
         )
+        card_type = CardType(str(definition["card_type"]))
+        if card_type == CardType.CHARACTER:
+            return CharacterCard(
+                hp=int(definition["hp"]), atk=int(definition["atk"]), **common
+            )
+        if card_type == CardType.ITEM:
+            return ItemCard(
+                hp_modifier=int(definition.get("hp_modifier", 0)),
+                atk_modifier=int(definition.get("atk_modifier", 0)),
+                deactivate=definition.get("deactivate", False),
+                hp_set=(
+                    int(definition["hp_set"])
+                    if definition.get("hp_set") is not None
+                    else None
+                ),
+                atk_set=(
+                    int(definition["atk_set"])
+                    if definition.get("atk_set") is not None
+                    else None
+                ),
+                **common,
+            )
+        return StageCard(**common)

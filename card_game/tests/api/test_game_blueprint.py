@@ -1,3 +1,4 @@
+import pytest
 from flask.testing import FlaskClient
 
 
@@ -188,11 +189,10 @@ def test_turn_draws_and_full_table_rejects_card_without_changing_state(client):
     for player in game.players:
         player.hp = 1000
     # Supply characters explicitly: the example deck now also contains items.
-    from domain.card import Card, CardType
+    from domain.card import Card, CardType, CharacterCard, ItemCard, StageCard
 
     game.player_a.cards_in_hand = [
-        Card(hp=5, atk=1, name=f"Character {n}", card_type=CardType.CHARACTER)
-        for n in range(6)
+        CharacterCard(hp=5, atk=1, name=f"Character {n}") for n in range(6)
     ]
     state = client.get(path).get_json()
 
@@ -239,25 +239,25 @@ def test_turn_draws_and_full_table_rejects_card_without_changing_state(client):
     assert client.get(path).get_json() == state
 
 
-def test_item_target_validation_and_serialization(client):
+@pytest.mark.parametrize("absolute", [False, True])
+def test_item_target_validation_and_serialization(client, absolute):
     from uuid import UUID
-    from domain.card import Card, CardType
+    from domain.card import Card, CardType, CharacterCard, ItemCard, StageCard
 
     state = start_state(client)
     path = f"/game/{state['game_id']}"
     game = client.application.extensions["game_service"].get_game(
         UUID(state["game_id"])
     )
-    target = Card(hp=5, atk=3, name="Target", card_type=CardType.CHARACTER)
+    target = CharacterCard(hp=5, atk=3, name="Target")
     target.activate()
-    equipment = Card(
-        hp=0,
-        atk=0,
+    equipment = ItemCard(
         name="Curse",
-        card_type=CardType.ITEM,
-        hp_modifier=-1,
-        atk_modifier=-2,
+        hp_modifier=0 if absolute else -1,
+        atk_modifier=0 if absolute else -2,
         deactivate=True,
+        hp_set=2 if absolute else None,
+        atk_set=7 if absolute else None,
     )
     game.player_b.table = [target]
     game.player_a.cards_in_hand = [equipment]
@@ -277,6 +277,39 @@ def test_item_target_validation_and_serialization(client):
     assert result["players"][0]["cards_in_hand"] == []
     assert result["players"][0]["can_play_item"] is False
     applied = result["players"][1]["table"][0]
-    assert (applied["hp"], applied["atk"], applied["can_attack"]) == (4, 1, False)
+    expected = (2, 7, False) if absolute else (4, 1, False)
+    assert (applied["hp"], applied["atk"], applied["can_attack"]) == expected
+    assert "hp_modifier" not in applied
+    assert "hp" not in applied["items"][0]
+    assert "can_attack" not in applied["items"][0]
+    assert "items" not in applied["items"][0]
     assert applied["items"][0]["id"] == equipment.id
     assert applied["items"][0]["deactivate"] is True
+    assert applied["items"][0]["hp_set"] == (2 if absolute else None)
+    assert applied["items"][0]["atk_set"] == (7 if absolute else None)
+
+
+def test_scenarios_serialize_and_remain_unplayable(client):
+    from uuid import UUID
+    from domain.card import StageCard
+
+    state = start_state(client)
+    path = f"/game/{state['game_id']}"
+    game = client.application.extensions["game_service"].get_game(
+        UUID(state["game_id"])
+    )
+    scenario = StageCard("Forest")
+    game.player_a.cards_in_hand = [scenario]
+    before = client.get(path).get_json()
+    card = before["players"][0]["cards_in_hand"][0]
+    assert card["card_type"] == "stage"
+    assert "hp" not in card and "hp_modifier" not in card
+    response = client.post(
+        path + "/play-card",
+        json={
+            "player_id": str(game.player_a.id),
+            "card_id": scenario.id,
+        },
+    )
+    assert response.status_code == 400
+    assert client.get(path).get_json() == before
