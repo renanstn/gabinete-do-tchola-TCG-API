@@ -313,3 +313,21 @@ def test_scenarios_serialize_and_remain_unplayable(client):
     )
     assert response.status_code == 400
     assert client.get(path).get_json() == before
+
+
+def test_serialized_game_includes_round_and_requirements():
+    from adapters.interfaces.http.game_blueprint import serialize_game
+    from domain.card import CharacterCard
+    from domain.game import Game
+    from domain.player import Player
+
+    requirements = {"card_on_table": {"name": "Ally"}}
+    card = CharacterCard(3, 2, "Dependent", play_requirements=requirements)
+    game = Game(Player("A", []), Player("B", []))
+    game.player_a.cards_in_hand.append(card)
+    state = serialize_game(game)
+    assert state["round_number"] == 1
+    assert state["active_stage"] is None
+    assert state["players"][0]["cards_in_hand"][0]["play_requirements"] == requirements
+    game.end_turn(game.player_a.id)
+    assert serialize_game(game)["round_number"] == 2

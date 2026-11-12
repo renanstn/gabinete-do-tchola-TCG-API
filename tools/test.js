@@ -18,6 +18,17 @@ function cardLabel(card) {
     return card.card_type === 'character' ? `${label} | HP ${card.hp} | ATK ${card.atk}` : label;
 }
 
+function requirementDetails(card) {
+    const requirements = card.play_requirements || {};
+    const labels = [];
+    for (const [key, reference] of Object.entries(requirements)) {
+        const target = reference.name != null ? `nome "${reference.name}"` : `ID ${reference.id}`;
+        if (key === 'active_stage') labels.push(`cenário ativo com ${target}`);
+        if (key === 'card_on_table') labels.push(`carta na própria mesa com ${target}`);
+    }
+    return labels.length ? `Requer: ${labels.join(' e ')}` : 'Sem requisitos para baixar.';
+}
+
 function cardDetails(card) {
     let text = cardLabel(card);
     if (card.card_type === 'character') text += ` | pode atacar: ${card.can_attack ? 'sim' : 'não'}`;
@@ -27,21 +38,75 @@ function cardDetails(card) {
         if (card.atk_set != null) text += ` | define ATK: ${card.atk_set}`;
         text += ` | modifica HP: ${card.hp_modifier}, ATK: ${card.atk_modifier}, inativa: ${card.deactivate}`;
     }
+    text += ` | ${requirementDetails(card)}`;
     return text;
 }
 
-function renderZone(parent, title, cards) {
-    const heading = document.createElement('h4');
-    heading.textContent = `${title} (${cards.length})`;
-    parent.append(heading);
+function renderCards(parent, cards) {
     const list = document.createElement('ul');
+    list.className = 'card-list';
+    if (!cards.length) {
+        const empty = document.createElement('p');
+        empty.className = 'empty-zone';
+        empty.textContent = 'Nenhuma carta';
+        parent.append(empty);
+        return;
+    }
     for (const card of cards) {
         const item = document.createElement('li');
-        item.textContent = cardDetails(card);
-        if (card.items?.length) renderZone(item, 'Itens equipados', card.items);
+        item.className = `game-card game-card--${card.card_type}`;
+        const name = document.createElement('strong');
+        name.className = 'card-name';
+        name.textContent = card.name;
+        const category = document.createElement('span');
+        category.className = 'card-category';
+        category.textContent = ({ character: 'Personagem', item: 'Item', stage: 'Cenário' })[card.card_type] || card.card_type;
+        const details = document.createElement('p');
+        details.className = 'card-details';
+        // The name and category already have their own headings.
+        details.textContent = cardDetails(card).slice(`${card.name} (${card.card_type})`.length).replace(/^ \| /, '');
+        item.append(category, name, details);
+        if (card.items?.length) {
+            const heading = document.createElement('h4');
+            heading.textContent = `Itens equipados (${card.items.length})`;
+            item.append(heading);
+            renderCards(item, card.items);
+        }
         list.append(item);
     }
     parent.append(list);
+}
+
+function renderPlayerTable(panel, player) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'zones-scroll';
+    const table = document.createElement('table');
+    table.className = 'zones-table';
+    const caption = document.createElement('caption');
+    caption.className = 'visually-hidden';
+    caption.textContent = `Cartas de ${player.name}`;
+    const head = document.createElement('thead');
+    const headings = document.createElement('tr');
+    const body = document.createElement('tbody');
+    const row = document.createElement('tr');
+    for (const [label, cards] of [
+        ['Mão', player.cards_in_hand],
+        ['Mesa', player.table],
+        ['Cemitério', player.cemetery],
+    ]) {
+        const heading = document.createElement('th');
+        heading.scope = 'col';
+        heading.textContent = `${label} (${cards.length})`;
+        headings.append(heading);
+        const cell = document.createElement('td');
+        renderCards(cell, cards);
+        row.append(cell);
+    }
+    head.append(headings);
+    body.append(row);
+    table.append(caption, head, body);
+    wrapper.append(table);
+    panel.append(wrapper);
 }
 
 function updateCards() {
@@ -58,6 +123,7 @@ function updateTarget() {
     const isItem = card?.card_type === 'item';
     $('move-target').disabled = !isItem;
     $('move-target').value = '';
+    $('move-requirements').textContent = card ? requirementDetails(card) : 'Selecione uma carta para consultar seus requisitos.';
 }
 
 function renderGame(state) {
@@ -65,7 +131,7 @@ function renderGame(state) {
     $('game').hidden = false;
     $('game-id').value = game.game_id;
     const nameOf = (id) => game.players.find((player) => player.id === id)?.name || id;
-    $('summary').textContent = `Partida: ${game.game_id} | ${game.active ? 'Em andamento' : 'Encerrada'} | Jogador ativo: ${nameOf(game.active_player_id)} | Vencedor: ${game.winner_id ? nameOf(game.winner_id) : 'nenhum'}`;
+    $('summary').textContent = `Partida: ${game.game_id} | ${game.active ? 'Em andamento' : 'Encerrada'} | Rodada: ${game.round_number ?? 'não informada'} | Cenário ativo: ${game.active_stage ? cardLabel(game.active_stage) : 'nenhum'} | Jogador ativo: ${nameOf(game.active_player_id)} | Vencedor: ${game.winner_id ? nameOf(game.winner_id) : 'nenhum'}`;
     $('state').textContent = json(game);
     $('players').replaceChildren();
     $('move-player').replaceChildren();
@@ -74,14 +140,13 @@ function renderGame(state) {
     for (const player of game.players) {
         option($('move-player'), player.id, `${player.name} (${player.id})`);
         const panel = document.createElement('article');
+        panel.className = player.id === game.active_player_id ? 'player-panel is-active' : 'player-panel';
         const title = document.createElement('h3');
         title.textContent = `${player.name}${player.id === game.active_player_id ? ' — turno atual' : ''}`;
         const info = document.createElement('p');
         info.textContent = `ID: ${player.id} | Vida: ${player.hp} | Deck: ${player.deck_count} | Pode jogar personagem: ${player.can_play_card} | Pode jogar item: ${player.can_play_item}`;
         panel.append(title, info);
-        renderZone(panel, 'Mão', player.cards_in_hand);
-        renderZone(panel, 'Mesa', player.table);
-        renderZone(panel, 'Cemitério', player.cemetery);
+        renderPlayerTable(panel, player);
         $('players').append(panel);
         for (const card of player.table) {
             if (card.card_type === 'character') option($('move-target'), card.id, `${player.name}: ${cardLabel(card)}`);

@@ -7,7 +7,9 @@ arquitetura hexagonal.
 
 - Cada jogador tem a chance de montar / editar seus decks antes do início do jogo
 - No início da partida cada jogador saca 5 cartas
+- Cada turno corresponde a uma rodada; a contagem começa em 1 e aumenta na troca de jogador.
 - Em sua vez, cada jogador pode baixar 1 carta na mesa
+- Cartas podem exigir um cenário ativo e/ou um personagem específico na própria mesa para serem baixadas. Veja [os requisitos no domínio](card_game/domain/README.md#rodadas-e-requisitos-para-baixar-cartas).
 - Existem cartas de **personagens** e cartas de **items**
 - Uma carta **não pode atacar** no mesmo turno em que foi **baixada**
 - Após baixar a carta, inicia-se a fase de ataque (automática)

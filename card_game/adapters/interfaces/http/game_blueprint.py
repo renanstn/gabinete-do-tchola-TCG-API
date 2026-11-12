@@ -55,6 +55,7 @@ def start_game():
             {
                 "game_id": str(game.id),
                 "active": game.active,
+                "round_number": game.round_number,
                 "active_player_id": str(game.active_player_id),
             }
         ),
@@ -68,6 +69,7 @@ def serialize_game(game):
     def serialize_card(card):
         data = {
             "id": card.id,
+            "play_requirements": card.play_requirements,
             "name": card.name,
             "card_type": card.card_type.value,
             "description": card.description,
@@ -93,6 +95,8 @@ def serialize_game(game):
         "game_id": str(game.id),
         "active": game.active,
         "active_player_id": str(game.active_player_id),
+        "round_number": game.round_number,
+        "active_stage": serialize_card(game.active_stage) if game.active_stage else None,
         "winner_id": str(game.winner.id) if game.winner else None,
         "players": [
             {

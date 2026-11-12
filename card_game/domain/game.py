@@ -2,7 +2,7 @@ import logging
 import random
 import uuid
 
-from domain.card import CharacterCard, ItemCard
+from domain.card import Card, CharacterCard, ItemCard, StageCard
 from domain.exceptions import InvalidMoveError
 from domain.player import Player
 
@@ -22,6 +22,8 @@ class Game:
         self.winner: Player | None = None
         self.active_player_id: uuid.UUID = player_a.id
         self.active: bool = True
+        self.round_number: int = 1
+        self.active_stage: StageCard | None = None
 
     @property
     def player_a(self) -> Player:
@@ -56,6 +58,7 @@ class Game:
         Passa o turno para o oponente e realiza sua compra de início de turno.
         """
         _, opponent = self.get_active_player_and_opponent()
+        self.round_number += 1
         self.active_player_id = opponent.id
         self.start_turn()
         logger.debug("Switching turn to opponent")
@@ -79,6 +82,7 @@ class Game:
         self._validate_turn(player_id)
         active_player, _ = self.get_active_player_and_opponent()
         card = active_player.get_card_by_id(card_id)
+        self._validate_play_requirements(card, active_player)
         if not isinstance(card, ItemCard):
             if target_card_id is not None:
                 raise InvalidMoveError("Only items accept a target.")
@@ -98,6 +102,22 @@ class Game:
         raise InvalidMoveError(
             "Items require a character target on either player's table."
         )
+
+    def _validate_play_requirements(self, card: Card, player: Player) -> None:
+        def matches(candidate: Card, reference: dict[str, str]) -> bool:
+            return all(
+                getattr(candidate, field) == value for field, value in reference.items()
+            )
+
+        for requirement, reference in card.play_requirements.items():
+            if requirement == "active_stage":
+                if self.active_stage is None or not matches(
+                    self.active_stage, reference
+                ):
+                    raise InvalidMoveError("The required stage is not active.")
+            elif requirement == "card_on_table":
+                if not any(matches(candidate, reference) for candidate in player.table):
+                    raise InvalidMoveError("The required card is not on your table.")
 
     def end_turn(self, player_id: uuid.UUID) -> None:
         """

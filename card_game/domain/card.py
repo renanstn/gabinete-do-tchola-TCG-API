@@ -19,7 +19,25 @@ class Card(ABC):
         description: str | None = None,
         image: str | None = None,
         sound: str | None = None,
+        play_requirements: dict | None = None,
     ):
+        requirements = play_requirements if play_requirements is not None else {}
+        if not isinstance(requirements, dict):
+            raise ValueError("play_requirements must be an object.")
+        if set(requirements) - {"active_stage", "card_on_table"}:
+            raise ValueError("Unknown play requirement.")
+        for reference in requirements.values():
+            if (
+                not isinstance(reference, dict)
+                or len(reference) != 1
+                or not set(reference) <= {"id", "name"}
+                or not isinstance(next(iter(reference.values())), str)
+                or not next(iter(reference.values())).strip()
+            ):
+                raise ValueError("Requirements must specify a non-empty id or name.")
+        self.play_requirements = {
+            key: dict(reference) for key, reference in requirements.items()
+        }
         self.id = id or str(uuid.uuid4())
         self.name = name
         self.description = description
@@ -45,9 +63,10 @@ class ItemCard(Card):
         id: str | None = None,
         description: str | None = None,
         image: str | None = None,
-        sound: str | None = None
+        sound: str | None = None,
+        play_requirements: dict | None = None,
     ):
-        super().__init__(name, id, description, image, sound)
+        super().__init__(name, id, description, image, sound, play_requirements)
         self.hp_modifier = hp_modifier
         self.atk_modifier = atk_modifier
         self.deactivate = deactivate
@@ -84,9 +103,10 @@ class CharacterCard(Card):
         id: str | None = None,
         description: str | None = None,
         image: str | None = None,
-        sound: str | None = None
+        sound: str | None = None,
+        play_requirements: dict | None = None,
     ):
-        super().__init__(name, id, description, image, sound)
+        super().__init__(name, id, description, image, sound, play_requirements)
         self.hp = hp
         self.initial_hp = hp
         self.atk = atk

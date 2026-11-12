@@ -139,7 +139,7 @@ def test_scenarios_and_unequipped_items_survive_round_trip(populated_game):
         ]
     )
     snapshot = game_to_snapshot(populated_game)
-    assert snapshot["version"] == 2
+    assert snapshot["version"] == 3
     restored = game_from_snapshot(json.loads(json.dumps(snapshot)))
     assert_same_game(restored, populated_game)
 
@@ -171,3 +171,34 @@ def test_legacy_snapshot_with_fields_from_all_card_types(populated_game):
             for card in player[zone]:
                 add_legacy_fields(card)
     assert_same_game(game_from_snapshot(snapshot), populated_game)
+
+
+def test_round_and_requirements_survive_snapshot(populated_game):
+    populated_game.round_number = 8
+    populated_game.active_stage = StageCard("Forest")
+    populated_game.player_a.cards_in_hand[0].play_requirements = {
+        "active_stage": {"name": "Forest"},
+        "card_on_table": {"id": populated_game.player_a.table[0].id},
+    }
+    restored = game_from_snapshot(
+        json.loads(json.dumps(game_to_snapshot(populated_game)))
+    )
+    assert restored.round_number == 8
+    assert_same_card(restored.active_stage, populated_game.active_stage)
+    assert_same_game(restored, populated_game)
+
+
+@pytest.mark.parametrize("version", [1, 2])
+def test_legacy_snapshots_default_to_first_round(populated_game, version):
+    snapshot = game_to_snapshot(populated_game)
+    snapshot["version"] = version
+    snapshot.pop("round_number")
+    snapshot.pop("active_stage")
+    for player in snapshot["players"]:
+        for zone in ("deck", "cards_in_hand", "table", "cemetery"):
+            for card in player[zone]:
+                card.pop("play_requirements", None)
+    restored = game_from_snapshot(snapshot)
+    assert restored.round_number == 1
+    assert restored.active_stage is None
+    assert_same_game(restored, populated_game)

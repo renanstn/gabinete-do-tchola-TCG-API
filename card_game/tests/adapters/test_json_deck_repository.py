@@ -123,3 +123,22 @@ def test_loads_each_concrete_card_type():
         ({"name": "Forest", "card_type": "stage"}, StageCard),
     ]:
         assert isinstance(JsonDeckRepository._to_card(definition), expected)
+
+
+def test_loads_requirements_for_all_categories():
+    requirements = {
+        "active_stage": {"name": "Forest"},
+        "card_on_table": {"name": "Ally"},
+    }
+    for category in ("character", "item", "stage"):
+        card = JsonDeckRepository._to_card(
+            {
+                "card_type": category,
+                "name": "Card",
+                "hp": 3,
+                "atk": 1,
+                "play_requirements": requirements,
+            }
+        )
+        assert card.play_requirements == requirements
+        assert card.play_requirements is not requirements

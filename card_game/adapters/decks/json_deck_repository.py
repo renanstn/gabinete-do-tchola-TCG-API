@@ -31,6 +31,7 @@ class JsonDeckRepository(DeckRepository):
     def _to_card(definition: dict[str, object]) -> Card:
         common = dict(
             name=str(definition["name"]),
+            play_requirements=definition.get("play_requirements"),
             description=str(definition.get("description") or ""),
             image=str(definition.get("image") or "") or None,
             sound=str(definition.get("sound") or "") or None,

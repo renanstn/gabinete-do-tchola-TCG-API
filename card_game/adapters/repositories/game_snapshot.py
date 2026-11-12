@@ -11,6 +11,7 @@ from domain.player import Player
 def _card_to_dict(card: Card) -> dict[str, Any]:
     data = {
         "id": card.id,
+        "play_requirements": card.play_requirements,
         "name": card.name,
         "card_type": card.card_type.value,
         "description": card.description,
@@ -39,6 +40,7 @@ def _card_to_dict(card: Card) -> dict[str, Any]:
 def _card_from_dict(data: dict[str, Any]) -> Card:
     # Version 1 snapshots also contain unused fields; only read fields for this type.
     common = {key: data[key] for key in ("id", "name", "description", "image", "sound")}
+    common["play_requirements"] = data.get("play_requirements")
     card_type = CardType(data["card_type"])
     if card_type == CardType.CHARACTER:
         card = CharacterCard(hp=data["hp"], atk=data["atk"], **common)
@@ -87,23 +89,32 @@ def _player_from_dict(data: dict[str, Any]) -> Player:
 
 def game_to_snapshot(game: Game) -> dict[str, Any]:
     return {
-        "version": 2,
+        "version": 3,
         "id": str(game.id),
         "players": [_player_to_dict(player) for player in game.players],
         "active_player_id": str(game.active_player_id),
         "active": game.active,
+        "round_number": game.round_number,
+        "active_stage": _card_to_dict(game.active_stage) if game.active_stage else None,
         "winner_id": str(game.winner.id) if game.winner else None,
     }
 
 
 def game_from_snapshot(data: dict[str, Any]) -> Game:
-    if data["version"] not in (1, 2):
+    if data["version"] not in (1, 2, 3):
         raise ValueError("Unsupported game snapshot version.")
     player_a, player_b = [_player_from_dict(p) for p in data["players"]]
     game = Game(player_a, player_b)
     game.id = UUID(data["id"])
     game.active_player_id = UUID(data["active_player_id"])
     game.active = data["active"]
+    game.round_number = data.get("round_number", 1)
+    stage = data.get("active_stage")
+    if stage is not None:
+        restored_stage = _card_from_dict(stage)
+        if not isinstance(restored_stage, StageCard):
+            raise ValueError("Active stage must be a stage card.")
+        game.active_stage = restored_stage
     if data["winner_id"] is not None:
         game.winner = next(p for p in game.players if str(p.id) == data["winner_id"])
     return game

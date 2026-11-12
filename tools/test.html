@@ -12,9 +12,32 @@
         input { width: 450px; }
         button { padding: 8px; margin: 4px; cursor: pointer; }
         pre { background: #eee; padding: 12px; overflow: auto; }
-        .players { display: flex; flex-wrap: wrap; gap: 16px; }
-        .players > article { flex: 1; min-width: 280px; border: 1px solid #aaa; }
-        li { margin-bottom: 12px; overflow-wrap: anywhere; }
+        .players { display: grid; gap: 20px; }
+        .player-panel { min-width: 0; margin: 0; padding: 16px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; }
+        .player-panel.is-active { border-color: #2563eb; box-shadow: inset 4px 0 #2563eb; }
+        .player-panel h3 { margin: 0 0 8px; }
+        .player-panel > p { font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+        .zones-scroll { overflow-x: auto; }
+        .zones-table { width: 100%; min-width: 660px; table-layout: fixed; border-collapse: collapse; }
+        .zones-table th, .zones-table td { border: 1px solid #cbd5e1; padding: 12px; text-align: left; vertical-align: top; }
+        .zones-table th { background: #e2e8f0; }
+        .zones-table td { background: #f1f5f9; }
+        .card-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+        .game-card { min-width: 0; padding: 12px; border: 1px solid #94a3b8; border-top: 4px solid #64748b; border-radius: 8px; background: white; overflow-wrap: anywhere; }
+        .game-card--character { border-top-color: #2563eb; }
+        .game-card--item { border-top-color: #b45309; }
+        .game-card--stage { border-top-color: #15803d; }
+        .card-name { display: block; margin-top: 4px; font-size: 16px; }
+        .card-category { font-size: 12px; color: #475569; }
+        .card-details { margin: 8px 0 0; font-size: 13px; line-height: 1.6; }
+        .game-card h4 { margin: 12px 0 8px; font-size: 13px; }
+        .game-card .game-card { padding: 8px; background: #fffbeb; }
+        .empty-zone { margin: 8px 0; color: #64748b; font-size: 14px; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+        @media (max-width: 700px) {
+            body { margin: 16px auto; padding: 0 10px; }
+            .player-panel { padding: 12px; }
+        }
         #message { white-space: pre-wrap; }
     </style>
     <script src="test.js" defer></script>
@@ -47,6 +70,7 @@
             <legend>Jogada</legend>
             <label>Jogador <select id="move-player"></select></label>
             <label>Carta na mão <select id="move-card"></select></label>
+            <p id="move-requirements" role="status" aria-live="polite"></p>
             <label>Alvo do item (personagem na mesa de qualquer jogador) <select id="move-target"></select></label>
             <button id="play-card">Jogar carta</button>
             <button id="end-turn">Encerrar turno</button>
